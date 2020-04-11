@@ -541,6 +541,11 @@
     tslib "1.11.1"
     uuid "7.0.2"
 
+"@nestjs/cqrs@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/cqrs/-/cqrs-6.1.0.tgz#84529cfcdffa43624e251b1a71d61591fd4c3cad"
+  integrity sha512-J1csaa2LdodZtwXOoYNcnqvFzk+G3RAR+G0N8k1/dlP7GvDJT3OakS2YXPiOSl7fEMOD40eS4+9sQMs8xqiegw==
+
 "@nestjs/platform-express@^7.0.7":
   version "7.0.7"
   resolved "https://registry.yarnpkg.com/@nestjs/platform-express/-/platform-express-7.0.7.tgz#98067007365b015319d9d8421a1fc9d066f7b4df"
@@ -656,6 +661,11 @@
   resolved "https://registry.yarnpkg.com/@types/cookiejar/-/cookiejar-2.1.1.tgz#90b68446364baf9efd8e8349bb36bd3852b75b80"
   integrity sha512-aRnpPa7ysx3aNW60hTiCtLHlQaIFsXFCgQlpakNgDNVFzbtusSY8PwjAQgRWfSk0ekNoBjO51eQRB6upA9uuyw==
 
+"@types/dinero.js@^1.6.2":
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/@types/dinero.js/-/dinero.js-1.6.2.tgz#d8c0958493d39bf1c4614860aae433bbca771503"
+  integrity sha512-wSzUos19uWRJIoBWkFq1+p/ea8siR5jDrjh4biNUSVbLCZKjNw8PkAP6IlStupCZVZ81/9OPviyD3uS0nIONFw==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -762,6 +772,13 @@
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
   integrity sha512-K5K+yml8LTo9bWJI/rECfIPrGgxdpeNbj+d53lwN4QjW1MCwlkhUms+gtdzigTeUyBr09+u8BwOIY3MXvHdcsA==
 
+"@types/source-map-support@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@types/source-map-support/-/source-map-support-0.5.1.tgz#b13e4de5bf2e5858e0dfe33fac90556b0f652dc3"
+  integrity sha512-VDqnZe9D2zR19qbeRvwYyHSp7AtUtCkTaRVFQ8wzwH9TXw9kKKq/vBhfEnFEXVupO2M0lBMA9mr/XyQ6gEkUOA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
@@ -793,6 +810,11 @@
   integrity sha512-L7EbSkhSaWBpkl+PZAEAqZTqtTeIsq7s/oX/q0LNnxxJoRVKQE0T81XDVyaxjiiKQwiV2vhVeYRqxdRNqGOGJw==
   dependencies:
     source-map "^0.6.1"
+
+"@types/uuid@^7.0.2":
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-7.0.2.tgz#d680a9c596ef84abf5c4c07a32ffd66d582526f8"
+  integrity sha512-8Ly3zIPTnT0/8RCU6Kg/G3uTICf9sRwYOpUzSIM3503tLIKcnJPRuinHhXngJUy2MntrEf6dlpOHXJju90Qh5w==
 
 "@types/webpack-sources@*":
   version "0.1.7"
@@ -2262,6 +2284,11 @@ diffie-hellman@^5.0.0:
     bn.js "^4.1.0"
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
+
+dinero.js@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/dinero.js/-/dinero.js-1.8.1.tgz#775a647629b4195af9d02f46e9b7fa1fd81e906d"
+  integrity sha512-AQ09MDKonkGUrhBZZFx4tPTVcVJuHJ0VEA73LvcBoBB2eQSi1DbapeXj4wnUUpx1hVnPdyev1xPNnNMGy/Au0g==
 
 dns-prefetch-control@0.2.0:
   version "0.2.0"
@@ -6728,6 +6755,11 @@ uuid@^3.3.2:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
+
+uuid@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
+  integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
 
 v8-compile-cache@^2.0.3:
   version "2.1.0"
