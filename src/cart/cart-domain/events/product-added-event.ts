@@ -1,4 +1,4 @@
-import { CartProduct } from '../cart-product.model';
+import { CartProduct } from '../valueobjects/cart-product';
 
 export class ProductAddedEvent {
   constructor(

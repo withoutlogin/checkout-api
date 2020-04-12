@@ -3,11 +3,11 @@ import { CartDomainTypes } from '../cart-domain/cart-domain.types';
 import { CartRepository } from './cart-repository';
 
 @Module({
-  exports: [CartDomainTypes.REPOSITORY],
+  exports: [CartDomainTypes.CART_REPOSITORY],
   providers: [
     CartRepository,
     {
-      provide: CartDomainTypes.REPOSITORY,
+      provide: CartDomainTypes.CART_REPOSITORY,
       useClass: CartRepository,
     },
   ],

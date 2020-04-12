@@ -1,7 +1,4 @@
-import { Dinero } from 'dinero.js';
-
 export const CartDomainTypes = {
-  REPOSITORY: Symbol('CART_DOMAIN_REPOSITORY'),
+  CART_REPOSITORY: Symbol('CART_DOMAIN_REPOSITORY'),
+  PRICING_REPOSITORY: Symbol('CART_PRICING_REPOSITORY'),
 };
-
-export type Money = Dinero;

@@ -1,8 +1,8 @@
-import { Money } from './cart-domain.types';
+import { Money, Currency } from 'pricing/money';
 
 export class CartCurrency {
   constructor(
-    public readonly currency: string,
+    public readonly currency: Currency,
     public readonly conversionRate: Money,
   ) {}
 

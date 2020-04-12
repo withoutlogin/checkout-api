@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CartModule } from './cart/cart.module';
-import { CartDomainModule } from './cart/cart-domain/cart-domain.module';
+import { PricingModule } from './pricing/pricing.module';
 
 @Module({
-  imports: [CartDomainModule, CartModule],
+  imports: [CartModule, PricingModule],
   controllers: [AppController],
   providers: [AppService],
 })

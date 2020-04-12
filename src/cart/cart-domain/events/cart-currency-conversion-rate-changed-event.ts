@@ -1,4 +1,4 @@
-import { CartCurrency } from '../cart-currency.model';
+import { CartCurrency } from '../valueobjects/cart-currency';
 
 export class CartCurrencyConversionRateChangedEvent {
   constructor(
