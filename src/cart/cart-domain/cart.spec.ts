@@ -215,3 +215,56 @@ describe('Cart.changeProductQuantity', () => {
     ).toThrowError(ProductNotFoundInCart);
   });
 });
+
+describe('Cart.changeCurrency', () => {
+  let cart: Cart;
+  const cartProductId = uuidv4();
+  beforeEach(() => {
+    cart = createEmptyCart('USD');
+    cart.addProduct(
+      new CartProduct(
+        cartProductId,
+        5,
+        Dinero({
+          amount: 1500,
+          precision: 2,
+          currency: 'USD',
+        }),
+      ),
+    );
+  });
+
+  it('should change existing Cart currency', () => {
+    // given
+    const newCurrency = new CartCurrency(
+      'EUR',
+      Dinero({ amount: 92, precision: 2, currency: 'USD' }),
+    );
+
+    // when
+    cart.changeCurrency(newCurrency);
+    cart.commit();
+
+    // then
+    expect(cart.getCurrency()).toEqual(newCurrency);
+  });
+
+  it('should keep original product currency', () => {
+    // given
+    const newCurrency = new CartCurrency(
+      'EUR',
+      Dinero({
+        amount: 92,
+        precision: 2,
+        currency: 'USD',
+      }),
+    );
+
+    // when
+    cart.changeCurrency(newCurrency);
+    cart.commit();
+
+    // then
+    expect(cart.getProduct(cartProductId)?.price.getCurrency()).toEqual('USD');
+  });
+});

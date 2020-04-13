@@ -7,8 +7,9 @@ import { ProductPrice } from './product-price';
 @Injectable()
 export class ProductPricingService {
   // todo use external data access layer
+  // constructor(
   // @Inject(PricingTypes.PRICES_DAL) private pricesDb: IProductPricesDAL,
-  constructor() {}
+  //) {}
 
   async getPriceFor(productId: string): Promise<ProductPrice | undefined> {
     const entry = productPrices.find((entry) => entry.productId === productId);

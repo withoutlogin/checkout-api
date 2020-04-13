@@ -19,6 +19,6 @@ export class CartRepository implements ICartRepository {
   }
 
   async store(cart: Cart): Promise<void> {
-    const events = cart.getUncommittedEvents();
+    throw new Error('Not implemented yet');
   }
 }
