@@ -1,5 +1,5 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { ProductPricingService } from './product-pricing.service';
+import { ProductPricingService } from './product-prices/product-pricing.service';
 import { PricingController } from './pricing.controller';
 import { PriceListsService } from './pricelists/pricelists.service';
 import Dinero from 'dinero.js';

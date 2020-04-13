@@ -11,7 +11,7 @@ import { CartProduct } from './valueobjects/cart-product';
 
 export class Cart extends AggregateRoot implements DomainEntity {
   constructor(
-    private id: string,
+    public readonly id: string,
     private currency: CartCurrency,
     private products: Map<string, CartProduct>,
   ) {
@@ -19,14 +19,22 @@ export class Cart extends AggregateRoot implements DomainEntity {
   }
 
   addProduct(product: CartProduct): void {
-    const existing = this.getProduct(product.productId);
-    if (existing) {
-      this.changeProductQuantity(
+    this.apply(
+      new ProductAddedEvent(
+        this.id,
         product.productId,
-        existing.quantity + product.quantity, // todo: decide if pass the increment logic to the repository to solve potential write race condition
-      );
+        product.quantity,
+        product.price.toObject(),
+      ),
+    );
+  }
+
+  onProductAddedEvent(event: ProductAddedEvent): void {
+    const current = this.products.get(event.productId);
+    if (current) {
+      this.products.set(event.productId, current.withAdded(event.quantity));
     } else {
-      this.apply(new ProductAddedEvent(this.id, product));
+      this.products.set(event.productId, event.getCartProduct());
     }
   }
 
@@ -40,13 +48,46 @@ export class Cart extends AggregateRoot implements DomainEntity {
     this.apply(
       new CartCurrencyConversionRateChangedEvent(this.id, newCurrency),
     );
+  }
 
-    this.currency = newCurrency;
+  onCartCurrencyConversionRateChangedEvent(
+    event: CartCurrencyConversionRateChangedEvent,
+  ) {
+    this.currency = event.newCurrency;
+    // todo: recalculate products
+  }
+
+  changeCurrency(newCurrency: CartCurrency): void {
+    if (newCurrency.currency === this.currency.currency) {
+      return;
+    }
+
+    this.apply(new CartCurrencyChangedEvent(this.id, newCurrency));
+  }
+
+  onCartCurrencyChangedEvent(event: CartCurrencyChangedEvent): void {
+    this.currency = event.newCurrency;
+    // todo: recalculate products
   }
 
   removeProduct(productId: string) {
-    if (this.getProduct(productId)) {
-      this.apply(new ProductRemovedEvent(this.id, productId));
+    const current = this.getProduct(productId);
+    if (current) {
+      this.apply(new ProductRemovedEvent(this.id, productId, current.quantity));
+    }
+  }
+
+  onProductRemovedEvent(event: ProductRemovedEvent): void {
+    const current = this.getProduct(event.productId);
+    if (current) {
+      if (event.removedQuantity === current.quantity) {
+        this.products.delete(event.productId);
+      } else {
+        this.products.set(
+          event.productId,
+          current.withSubtracted(event.removedQuantity),
+        );
+      }
     }
   }
   /**
@@ -59,12 +100,19 @@ export class Cart extends AggregateRoot implements DomainEntity {
       throw new ProductNotFoundInCart(productId);
     }
 
-    if (newQuantity === product.quantity) {
-      return;
+    const diff = newQuantity - product.quantity;
+    if (diff > 0) {
+      this.apply(
+        new ProductAddedEvent(
+          this.id,
+          productId,
+          diff,
+          product.price.toObject(),
+        ),
+      );
+    } else if (diff < 0) {
+      this.apply(new ProductRemovedEvent(this.id, productId, Math.abs(diff)));
     }
-    this.apply(
-      new ProductQuantityUpdatedEvent(this.id, productId, newQuantity),
-    );
   }
 
   getProduct(productId: string): CartProduct | undefined {
@@ -73,18 +121,5 @@ export class Cart extends AggregateRoot implements DomainEntity {
 
   getCurrency(): CartCurrency {
     return this.currency;
-  }
-
-  changeCurrency(newCurrency: CartCurrency): void {
-    if (newCurrency.currency === this.currency.currency) {
-      return;
-    }
-
-    this.apply(new CartCurrencyChangedEvent(this.id, newCurrency));
-    this.currency = newCurrency;
-  }
-
-  apply(event: IEvent, isFromHistory?: boolean) {
-    console.debug('Cart apply', event, isFromHistory);
   }
 }

@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { ProductPrice } from './product-price';
 import Dinero from 'dinero.js';
-import { productPrices } from './data';
-import { Currency } from './money';
+import { Currency } from '../money';
+import { productPrices } from '../data';
 
 @Injectable()
 export class ProductPricingService {
+  // todo use external data access layer
+  // @Inject(PricingTypes.PRICES_DAL) private pricesDb: IProductPricesDAL,
+  constructor() {}
+
   async getPriceFor(productId: string): Promise<ProductPrice | undefined> {
     const entry = productPrices.find((entry) => entry.productId === productId);
     if (entry) {

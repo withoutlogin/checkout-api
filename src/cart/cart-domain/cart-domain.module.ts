@@ -1,14 +1,12 @@
-import { Module, DynamicModule } from '@nestjs/common';
-import { Cart } from './cart';
-import { AddProductCommand } from './commands/add-product-command';
-import { RemoveProductCommand } from './commands/remove-product-command';
-import { ChangeProductQuantityCommand } from './commands/change-product-quantity-command';
-import { AddProductHandler } from './handlers/add-product-handler';
-import { RemoveProductHandler } from './handlers/remove-product-handler';
-import { ChangeProductQuantityHandler } from './handlers/change-product-quantity-handler';
-import { IPricingRepository } from './repositories';
+import { DynamicModule } from '@nestjs/common';
 import { CartDomainTypes } from './cart-domain.types';
-import { CartRepository } from '../cart-write-stack/cart-repository';
+import { AddProductCommand } from './commands/add-product-command';
+import { ChangeProductQuantityCommand } from './commands/change-product-quantity-command';
+import { RemoveProductCommand } from './commands/remove-product-command';
+import { AddProductHandler } from './handlers/add-product-handler';
+import { ChangeProductQuantityHandler } from './handlers/change-product-quantity-handler';
+import { RemoveProductHandler } from './handlers/remove-product-handler';
+import { IPricingRepository } from './repositories';
 import { ICartRepository } from './repositories/index';
 
 const commands = [
@@ -41,6 +39,8 @@ export class CartDomainModule {
           provide: CartDomainTypes.PRICING_REPOSITORY,
           useValue: infrastructure.pricingRepository,
         },
+        ...commands,
+        ...handlers,
       ],
     };
   }

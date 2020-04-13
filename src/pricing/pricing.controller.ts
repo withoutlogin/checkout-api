@@ -1,6 +1,6 @@
 import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
-import { ProductPrice } from './product-price';
-import { ProductPricingService } from './product-pricing.service';
+import { ProductPrice } from './product-prices/product-price';
+import { ProductPricingService } from './product-prices/product-pricing.service';
 import { PriceListsService } from './pricelists/pricelists.service';
 import { Currency } from './money';
 

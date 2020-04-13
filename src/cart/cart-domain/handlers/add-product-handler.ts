@@ -33,6 +33,7 @@ export class AddProductHandler implements ICommandHandler<AddProductCommand> {
       command.quantity,
       price,
     );
+
     return cart.addProduct(cartProduct);
   }
 }
