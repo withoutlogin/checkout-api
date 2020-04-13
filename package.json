@@ -40,6 +40,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^8.3.4",
     "@nestjs/cli": "^7.1.2",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.7",
@@ -49,6 +50,7 @@
     "@types/supertest": "^2.0.8",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
+    "commitlint": "^8.3.5",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.20.2",
@@ -83,15 +85,15 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+      "pre-commit": "lint-staged && echo 'pre-commit executed'",
+      "pre-push": "yarn test && yarn test:e2e",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS && return 1"
     }
   },
   "lint-staged": {
     "*.ts": [
-      "prettier --config .prettierrc --write",
-      "eslint --fix",
-      "git add"
+      "prettier --write",
+      "eslint --fix"
     ]
   }
 }
