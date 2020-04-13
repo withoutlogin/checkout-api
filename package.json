@@ -22,14 +22,20 @@
   "dependencies": {
     "@nestjs/common": "^7.0.7",
     "@nestjs/core": "^7.0.7",
+    "@nestjs/cqrs": "^6.1.0",
     "@nestjs/platform-express": "^7.0.7",
+    "@types/dinero.js": "^1.6.2",
     "@types/helmet": "^0.0.45",
+    "@types/source-map-support": "^0.5.1",
+    "@types/uuid": "^7.0.2",
+    "dinero.js": "^1.8.1",
     "helmet": "^3.22.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "source-map-support": "^0.5.16",
     "start-server-webpack-plugin": "^2.2.5",
+    "uuid": "^7.0.3",
     "webpack": "^4.42.1",
     "webpack-node-externals": "^1.7.2"
   },
@@ -67,6 +73,10 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ]
   }
 }
