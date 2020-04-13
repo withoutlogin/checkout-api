@@ -1,5 +1,9 @@
 {
-  "cSpell.words": ["dinero"],
+  "cSpell.words": [
+    "dinero",
+    "pricelists",
+    "uuidv"
+  ],
   "search.exclude": {
     "**/.git": true,
     "**/.svn": true,
