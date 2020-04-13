@@ -1,10 +1,9 @@
-import { AggregateRoot, IEvent } from '@nestjs/cqrs';
+import { AggregateRoot } from '@nestjs/cqrs';
 import { DomainEntity } from '../../common/ddd/interfaces';
 import { ProductNotFoundInCart } from './errors';
 import { CartCurrencyChangedEvent } from './events/cart-currency-changed-event';
 import { CartCurrencyConversionRateChangedEvent } from './events/cart-currency-conversion-rate-changed-event';
 import { ProductAddedEvent } from './events/product-added-event';
-import { ProductQuantityUpdatedEvent } from './events/product-quantity-updated-event';
 import { ProductRemovedEvent } from './events/product-removed-event';
 import { CartCurrency } from './valueobjects/cart-currency';
 import { CartProduct } from './valueobjects/cart-product';

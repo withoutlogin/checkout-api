@@ -1,17 +1,16 @@
+import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CartController } from './cart.controller';
-import { CartFinderService } from './cart-read-stack/cart-finder/cart-finder.service';
-import { Cart } from './cart-domain/cart';
-import {
-  CartReadDto,
-  CartProductReadDto,
-  PriceDto,
-} from './cart-read-stack/cart-read-dtos';
 import { Maybe } from 'common/ts-helpers';
+import Dinero from 'dinero.js';
 import { v4 as uuidv4 } from 'uuid';
 import { Currency } from '../pricing/money';
-import Dinero from 'dinero.js';
-import { CqrsModule } from '@nestjs/cqrs';
+import { CartFinderService } from './cart-read-stack/cart-finder/cart-finder.service';
+import {
+  CartProductReadDto,
+  CartReadDto,
+  PriceDto,
+} from './cart-read-stack/cart-read-dtos';
+import { CartController } from './cart.controller';
 
 const createPriceDto = (currency: Currency, amountInPrecision2: number) => {
   return PriceDto.from(

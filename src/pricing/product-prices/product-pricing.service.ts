@@ -1,8 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ProductPrice } from './product-price';
+import { Injectable } from '@nestjs/common';
 import Dinero from 'dinero.js';
-import { Currency } from '../money';
 import { productPrices } from '../data';
+import { Currency } from '../money';
+import { ProductPrice } from './product-price';
 
 @Injectable()
 export class ProductPricingService {

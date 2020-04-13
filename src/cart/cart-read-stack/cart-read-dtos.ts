@@ -1,6 +1,5 @@
-import { Currency, Money } from '../../pricing/money';
 import { IQueryResult } from '@nestjs/cqrs';
-import Dinero from 'dinero.js';
+import { Currency, Money } from '../../pricing/money';
 
 export class CartReadDto implements IQueryResult {
   constructor(public readonly id: string, public readonly currency: Currency) {}

@@ -12,7 +12,6 @@ class PriceListServiceMock extends PriceListsService {
 
 class ProductPricingServiceMock extends ProductPricingService {
   constructor() {
-    console.log('createing ProductPricingServiceMock');
     super();
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ICartRepository } from 'cart/cart-domain/repositories';
 import { Cart } from 'cart/cart-domain/cart';
+import { ICartRepository } from 'cart/cart-domain/repositories';
 import { CartCurrency } from 'cart/cart-domain/valueobjects/cart-currency';
 import Dinero from 'dinero.js';
 import { CartProduct } from '../cart-domain/valueobjects/cart-product';
