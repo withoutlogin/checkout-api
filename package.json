@@ -85,9 +85,9 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && echo 'pre-commit executed'",
+      "pre-commit": "lint-staged",
       "pre-push": "yarn test && yarn test:e2e",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS && return 1"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
