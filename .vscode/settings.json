@@ -1,9 +1,5 @@
 {
-  "cSpell.words": [
-    "dinero",
-    "pricelists",
-    "uuidv"
-  ],
+  "cSpell.words": ["dinero", "pricelists", "uuidv"],
   "search.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -24,5 +20,6 @@
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true
-  }
+  },
+  "typescript.reportStyleChecksAsWarnings": true
 }
