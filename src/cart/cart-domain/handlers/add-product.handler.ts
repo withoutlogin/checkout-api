@@ -1,5 +1,5 @@
-import { AddProductCommand } from '../commands/add-product-command';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { AddProductCommand } from '../commands/add-product.command';
+import { CommandHandler, ICommandHandler, EventPublisher } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { CartDomainTypes } from '../cart-domain.types';
 import { CartProduct } from '../valueobjects/cart-product';
@@ -13,10 +13,13 @@ export class AddProductHandler implements ICommandHandler<AddProductCommand> {
     private cartRepository: ICartRepository,
     @Inject(CartDomainTypes.PRICING_REPOSITORY)
     private pricingService: IPricingRepository,
+    private publisher: EventPublisher,
   ) {}
 
   async execute(command: AddProductCommand): Promise<void> {
-    const cart = await this.cartRepository.load(command.cartId);
+    const cart = this.publisher.mergeObjectContext(
+      await this.cartRepository.load(command.cartId),
+    );
     if (!cart) {
       throw new DomainError(`Cart with id=${command.cartId} not found.`);
     }
@@ -34,6 +37,7 @@ export class AddProductHandler implements ICommandHandler<AddProductCommand> {
       price,
     );
 
-    return cart.addProduct(cartProduct);
+    cart.addProduct(cartProduct);
+    cart.commit();
   }
 }

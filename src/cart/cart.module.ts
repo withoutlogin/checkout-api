@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
-import { CartWriteStackModule } from './cart-write-stack/cart-write-stack.module';
-import { CartController } from './cart.controller';
+import { CartController } from './controllers/cart.controller';
 import { CartReadStackModule } from './cart-read-stack/cart-read-stack.module';
 import { CqrsModule } from '@nestjs/cqrs';
 
+import { CartWriteStackModule } from './cart-write-stack/cart-write-stack.module';
+import { CartProductController } from './controllers/cart-product.controller';
+
 @Module({
   imports: [CqrsModule, CartWriteStackModule, CartReadStackModule],
-  controllers: [CartController],
+  controllers: [CartController, CartProductController],
+  providers: [],
 })
 export class CartModule {}

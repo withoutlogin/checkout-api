@@ -1,8 +1,28 @@
 import { Module } from '@nestjs/common';
-import { CartFinderService } from './cart-finder/cart-finder.service';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CartReadStackTypes } from './cart-read-stack.types';
+import {
+  InMemoryCartProductsRepository,
+  InMemoryCartRepository,
+} from './infrastructure/in-memory';
+import { QueryHandlers } from './queries';
 
 @Module({
-  providers: [CartFinderService],
-  exports: [CartFinderService],
+  imports: [CqrsModule],
+  exports: [
+    // CartReadStackTypes.CART_PRODUCTS_READ_REPOSITORY,
+    // CartReadStackTypes.CART_READ_REPOSITORY,
+  ],
+  providers: [
+    ...QueryHandlers,
+    {
+      provide: CartReadStackTypes.CART_PRODUCTS_READ_REPOSITORY,
+      useClass: InMemoryCartRepository,
+    },
+    {
+      provide: CartReadStackTypes.CART_READ_REPOSITORY,
+      useClass: InMemoryCartProductsRepository,
+    },
+  ],
 })
 export class CartReadStackModule {}

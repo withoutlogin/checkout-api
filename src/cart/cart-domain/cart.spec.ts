@@ -9,14 +9,16 @@ import { DomainError } from '../../common/ddd/errors';
 import { ProductNotFoundInCart } from './errors';
 
 const createEmptyCart = (currency: Currency = 'USD'): Cart => {
-  return new Cart(
+  const c = new Cart();
+  c.initialize(
     uuidv4(),
     new CartCurrency(
       currency,
       Dinero({ amount: 1, precision: 1, currency: currency }),
     ),
-    new Map(),
   );
+  c.commit();
+  return c;
 };
 
 describe('Cart.addProduct', () => {

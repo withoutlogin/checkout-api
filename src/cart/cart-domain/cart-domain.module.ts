@@ -1,25 +1,14 @@
 import { DynamicModule } from '@nestjs/common';
 import { CartDomainTypes } from './cart-domain.types';
-import { AddProductCommand } from './commands/add-product-command';
-import { ChangeProductQuantityCommand } from './commands/change-product-quantity-command';
-import { RemoveProductCommand } from './commands/remove-product-command';
-import { AddProductHandler } from './handlers/add-product-handler';
-import { ChangeProductQuantityHandler } from './handlers/change-product-quantity-handler';
-import { RemoveProductHandler } from './handlers/remove-product-handler';
+import { commandHandlers } from './handlers';
 import { IPricingRepository } from './repositories';
 import { ICartRepository } from './repositories/index';
-
-const commands = [
-  AddProductCommand,
-  RemoveProductCommand,
-  ChangeProductQuantityCommand,
-];
-
-const handlers = [
-  AddProductHandler,
-  RemoveProductHandler,
-  ChangeProductQuantityHandler,
-];
+import { commands } from './commands';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CreateCartHandler } from './handlers/create-cart.handler';
+import { CartWriteStackModule } from 'cart/cart-write-stack/cart-write-stack.module';
+import { CartReadStackModule } from 'cart/cart-read-stack/cart-read-stack.module';
+import { PricingModule } from 'pricing/pricing.module';
 
 interface CartDomainInfrastructure {
   pricingRepository: IPricingRepository;
@@ -27,9 +16,17 @@ interface CartDomainInfrastructure {
 }
 
 export class CartDomainModule {
-  register(infrastructure: CartDomainInfrastructure): DynamicModule {
+  // todo: initialize this module properly in outer module
+  static register(infrastructure: CartDomainInfrastructure): DynamicModule {
     return {
+      imports: [
+        CqrsModule,
+        CartWriteStackModule,
+        CartReadStackModule,
+        PricingModule,
+      ],
       module: CartDomainModule,
+      exports: [CreateCartHandler],
       providers: [
         {
           provide: CartDomainTypes.CART_REPOSITORY,
@@ -40,7 +37,7 @@ export class CartDomainModule {
           useValue: infrastructure.pricingRepository,
         },
         ...commands,
-        ...handlers,
+        ...commandHandlers,
       ],
     };
   }

@@ -12,14 +12,16 @@ describe('Cart', () => {
       Dinero({ amount: 799, precision: 2, currency: 'USD' }),
     );
 
-    const products = new Map<string, CartProduct>();
-    products.set(cartProduct.productId, cartProduct);
-
-    const cart = new Cart(
+    const cart = new Cart();
+    cart.initialize(
       uuidv4(),
       new CartCurrency('USD', Dinero({ amount: 1, currency: 'USD' })),
-      products,
     );
+    cart.commit();
+
+    // when
+    cart.addProduct(cartProduct);
+    cart.commit();
 
     expect(
       cart.getProduct(cartProduct.productId)?.equalsTo(cartProduct),
