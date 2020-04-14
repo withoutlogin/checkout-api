@@ -1,10 +1,6 @@
-import { CqrsModule, QueryBus, ofType } from '@nestjs/cqrs';
+import { CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Maybe } from 'common/ts-helpers';
-import { v4 as uuidv4 } from 'uuid';
-import { CartFinderService } from '../cart-read-stack/cart-finder.service';
 import { CartController } from './cart.controller';
-import { CartByIdQuery } from '../cart-read-stack/queries/cart-by-id.query';
 
 describe('Cart Controller', () => {
   // todo tests for controller

@@ -12,7 +12,6 @@ import { CartByIdQuery } from 'cart/cart-read-stack/queries/cart-by-id.query';
 import { Maybe } from 'common/ts-helpers';
 import { v4 as uuidv4 } from 'uuid';
 import { Currency } from '../../pricing/money';
-import { CreateCartHandler } from '../cart-domain/handlers/create-cart.handler';
 
 /**
  * @todo implementation based on repo
