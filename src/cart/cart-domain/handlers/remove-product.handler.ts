@@ -1,28 +1,24 @@
 import { CommandHandler, ICommandHandler, EventPublisher } from '@nestjs/cqrs';
-import { Inject } from '@nestjs/common';
-import { CartDomainTypes } from '../cart-domain.types';
-import { ICartRepository } from '../repositories';
 import { CartNotFound } from '../errors';
 import { RemoveProductCommand } from '../commands/remove-product.command';
+import { CartDomainRepository } from '../repositories/index';
 
 @CommandHandler(RemoveProductCommand)
 export class RemoveProductHandler
   implements ICommandHandler<RemoveProductCommand> {
   constructor(
-    @Inject(CartDomainTypes.CART_REPOSITORY)
-    private cartRepository: ICartRepository,
+    private cartRepository: CartDomainRepository,
     private publisher: EventPublisher,
   ) {}
 
   async execute(command: RemoveProductCommand): Promise<void> {
-    const cart = this.publisher.mergeObjectContext(
-      await this.cartRepository.load(command.cartId),
-    );
+    const cart = await this.cartRepository.load(command.cartId);
     if (!cart) {
       throw new CartNotFound(command.cartId);
     }
 
-    cart.removeProduct(command.productId);
-    cart.commit();
+    const cartAggregate = this.publisher.mergeObjectContext(cart);
+    cartAggregate.removeProduct(command.productId);
+    cartAggregate.commit();
   }
 }

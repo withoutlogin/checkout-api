@@ -17,11 +17,11 @@ import { QueryHandlers } from './queries';
     ...QueryHandlers,
     {
       provide: CartReadStackTypes.CART_PRODUCTS_READ_REPOSITORY,
-      useClass: InMemoryCartRepository,
+      useClass: InMemoryCartProductsRepository,
     },
     {
       provide: CartReadStackTypes.CART_READ_REPOSITORY,
-      useClass: InMemoryCartProductsRepository,
+      useClass: InMemoryCartRepository,
     },
   ],
 })

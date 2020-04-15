@@ -1,21 +1,20 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Cart } from 'cart/cart-domain/cart';
-import { ICartRepository } from 'cart/cart-domain/repositories';
 import { IEventSourcingStore } from 'common/event-sourcing';
 import { CartCreatedEvent } from '../../cart-domain/events/cart-created-event';
 import { CartWriteStackTypes } from '../cart-write-stack.types';
 import { DataCorruptedError } from './errors';
 
 @Injectable()
-export class CartRepository implements ICartRepository {
+export class CartEventStoreBasedRepository {
   constructor(
     @Inject(CartWriteStackTypes.EVENT_SOURCING_STORE)
     private eventStore: IEventSourcingStore,
   ) {}
-  async load(cartId: string): Promise<Cart> {
+  async load(cartId: string): Promise<Cart | undefined> {
     const events = await this.eventStore.getEventsFor(Cart.name, cartId);
     if (!events.length) {
-      throw new NotFoundException();
+      return;
     }
 
     if (!(events[0] instanceof CartCreatedEvent)) {

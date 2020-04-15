@@ -1,31 +1,28 @@
-import { CommandHandler, ICommandHandler, EventPublisher } from '@nestjs/cqrs';
-import { Inject } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
+import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+import { DomainError } from 'common/ddd/errors';
 import { CartDomainTypes } from '../cart-domain.types';
 import { ChangeProductQuantityCommand } from '../commands/change-product-quantity.command';
-import { ICartRepository } from '../repositories';
-import { DomainError } from 'common/ddd/errors';
+import { CartDomainRepository } from '../repositories/index';
+import { CartNotFound } from '../errors';
 
 @CommandHandler(ChangeProductQuantityCommand)
 export class ChangeProductQuantityHandler
   implements ICommandHandler<ChangeProductQuantityCommand> {
   constructor(
-    @Inject(CartDomainTypes.CART_REPOSITORY)
-    private cartRepository: ICartRepository,
+    private cartRepository: CartDomainRepository,
     private publisher: EventPublisher,
   ) {}
 
   async execute(command: ChangeProductQuantityCommand): Promise<void> {
     const { cartId, productId, newQuantity } = command;
-
-    const cart = this.publisher.mergeObjectContext(
-      await this.cartRepository.load(cartId),
-    );
-
+    const cart = await this.cartRepository.load(cartId);
     if (!cart) {
-      throw new DomainError(`Cart with id=${cartId} not found.`);
+      throw new CartNotFound(cartId);
     }
 
-    cart.changeProductQuantity(productId, newQuantity);
-    cart.commit();
+    const cartAggregate = this.publisher.mergeObjectContext(cart);
+    cartAggregate.changeProductQuantity(productId, newQuantity);
+    cartAggregate.commit();
   }
 }
