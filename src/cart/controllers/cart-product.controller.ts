@@ -8,6 +8,8 @@ import {
   Post,
   UseInterceptors,
   Put,
+  Delete,
+  HttpCode,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -24,6 +26,7 @@ import { CartProductInputDto } from './dtos/cart-product.dto';
 import { CartProductUpdateInputDto } from './dtos/cart-product-update-input.dto';
 import { ProductQuantityUpdatedEvent } from '../cart-domain/events/product-quantity-updated-event';
 import { ChangeProductQuantityCommand } from '../cart-domain/commands/change-product-quantity.command';
+import { RemoveProductCommand } from '../cart-domain/commands/remove-product.command';
 
 @Controller('cart/:cartId/products')
 @UseInterceptors(CreatedLocationInterceptor)
@@ -68,6 +71,10 @@ export class CartProductController {
   }
 
   @Get(':productId')
+  @ApiParam({
+    name: 'productId',
+    example: '2680ee73-8661-4248-a1a0-b77799fc8cb4',
+  })
   @ApiResponse({ type: ProductReadDto })
   async getSingleProductInCart(
     @Param('cartId') cartId: string,
@@ -90,6 +97,14 @@ export class CartProductController {
   }
 
   @Put(':productId')
+  @HttpCode(204)
+  @ApiResponse({ status: 404, description: 'Resource not found.' })
+  @ApiResponse({ status: 204, description: 'Updated successfully.' })
+  @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
+  @ApiParam({
+    name: 'productId',
+    example: '2680ee73-8661-4248-a1a0-b77799fc8cb4',
+  })
   async updateProductInCart(
     @Param('cartId') cartId: string,
     @Param('productId') productId: string,
@@ -116,5 +131,35 @@ export class CartProductController {
         productUpdateInput.quantity,
       ),
     );
+  }
+
+  @Delete(':productId')
+  @HttpCode(204)
+  @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
+  @ApiParam({
+    name: 'productId',
+    example: '2680ee73-8661-4248-a1a0-b77799fc8cb4',
+  })
+  @ApiResponse({ status: 404, description: 'Resource not found.' })
+  @ApiResponse({ status: 204, description: 'Deleted successfully.' })
+  async deleteProductFromCart(
+    @Param('cartId') cartId: string,
+    @Param('productId') productId: string,
+  ): Promise<void> {
+    const cart = await this.queryBus.execute(new CartByIdQuery(cartId));
+    if (!cart) {
+      throw new NotFoundException();
+    }
+
+    const productsDto = (await this.queryBus.execute(
+      new CartProductsQuery(cartId),
+    )) as CartProductsReadDto;
+
+    const product = productsDto.getProduct(productId);
+    if (!product) {
+      throw new NotFoundException();
+    }
+
+    await this.commandBus.execute(new RemoveProductCommand(cartId, productId));
   }
 }

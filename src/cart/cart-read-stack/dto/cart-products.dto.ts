@@ -1,13 +1,46 @@
 import { IMoneyData } from 'cart/cart-domain/valueobjects';
+import { ApiProperty } from '@nestjs/swagger';
+import { Currency } from 'pricing/money';
+
+export class IMoneyDataDto implements IMoneyData {
+  @ApiProperty({ example: 780 })
+  amount!: number;
+  @ApiProperty({ example: 2 })
+  precision!: number;
+  @ApiProperty({
+    type: String,
+    description: 'Currency code',
+    example: 'USD',
+    examples: ['USD', 'EUR', 'PLN'],
+  })
+  currency!: Currency;
+}
 
 export class ProductReadDto {
+  @ApiProperty()
+  id: string;
+  @ApiProperty()
+  name: string;
+  @ApiProperty({ type: IMoneyDataDto })
+  price: IMoneyData;
+  @ApiProperty()
+  quantity: number;
+  @ApiProperty({ type: String, required: false })
+  description?: string;
+
   constructor(
-    public readonly id: string,
-    public name: string,
-    public price: IMoneyData,
-    public quantity: number,
-    public description?: string,
-  ) {}
+    id: string,
+    name: string,
+    price: IMoneyData,
+    quantity: number,
+    description?: string,
+  ) {
+    this.id = id;
+    this.name = name;
+    this.price = price;
+    this.quantity = quantity;
+    this.description = description;
+  }
 }
 
 export class CartProductsReadDto {
