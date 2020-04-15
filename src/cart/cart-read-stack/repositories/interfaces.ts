@@ -7,6 +7,6 @@ export interface ICartReadRepository {
 }
 
 export interface ICartProductsReadRepository {
-  getForCartId(cartId: string): Promise<CartProductsReadDto | undefined>;
+  getForCartId(cartId: string): Promise<CartProductsReadDto>;
   store(cartProducts: CartProductsReadDto): Promise<void>;
 }

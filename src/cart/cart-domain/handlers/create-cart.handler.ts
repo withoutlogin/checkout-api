@@ -1,4 +1,4 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import Dinero from 'dinero.js';
 import { Cart } from '../cart';
@@ -24,7 +24,7 @@ export class CreateCartHandler implements ICommandHandler<CreateCartCommand> {
       currency,
       Dinero({
         amount: 1,
-        precision: 1,
+        precision: 0,
         currency: 'USD',
       }),
     );

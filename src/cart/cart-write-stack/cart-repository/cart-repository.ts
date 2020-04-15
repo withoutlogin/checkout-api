@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Cart } from 'cart/cart-domain/cart';
 import { IEventSourcingStore } from 'common/event-sourcing';
 import { CartCreatedEvent } from '../../cart-domain/events/cart-created-event';

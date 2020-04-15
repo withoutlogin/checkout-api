@@ -35,12 +35,6 @@ export class CartController {
     const command = new CreateCartCommand(id, defaultCurrency);
     await this.commandBus.execute(command);
 
-    // const dto = (await this.queryBus.execute(
-    //   new CartByIdQuery(id),
-    // )) as CartReadDto;
-
-    // res.setHeader('Location');
-    // return 'lalalala';
     return new ResourceCreatedInCollection(id);
   }
 

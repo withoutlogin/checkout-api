@@ -1,4 +1,4 @@
-import { EventsHandler, IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetCartDomainModelQuery } from '../../cart-domain/queries/get-cart-domain-model.query';
 import { CartEventStoreBasedRepository } from '../cart-repository/cart-repository';
 

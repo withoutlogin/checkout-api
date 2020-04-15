@@ -1,10 +1,7 @@
-import { Inject, NotFoundException } from '@nestjs/common';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { DomainError } from 'common/ddd/errors';
-import { CartDomainTypes } from '../cart-domain.types';
 import { ChangeProductQuantityCommand } from '../commands/change-product-quantity.command';
-import { CartDomainRepository } from '../repositories/index';
 import { CartNotFound } from '../errors';
+import { CartDomainRepository } from '../repositories/index';
 
 @CommandHandler(ChangeProductQuantityCommand)
 export class ChangeProductQuantityHandler
