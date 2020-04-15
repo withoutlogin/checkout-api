@@ -35,6 +35,7 @@ export class CartProductController {
 
   @Get('/')
   @ApiResponse({ type: [ProductReadDto] })
+  @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
   async getProductsInCart(
     @Param('cartId') cartId: string,
   ): Promise<ProductReadDto[]> {

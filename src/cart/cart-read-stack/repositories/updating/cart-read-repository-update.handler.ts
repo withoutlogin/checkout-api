@@ -1,4 +1,10 @@
-import { IEventHandler, EventsHandler, EventBus, ofType } from '@nestjs/cqrs';
+import {
+  IEventHandler,
+  EventsHandler,
+  EventBus,
+  ofType,
+  QueryBus,
+} from '@nestjs/cqrs';
 import { ESEvent } from 'common/event-sourcing';
 import { domainEvents } from 'cart/cart-domain/events';
 import { Inject, Logger, OnModuleDestroy } from '@nestjs/common';
@@ -19,6 +25,9 @@ import { ProductRemovedEvent } from 'cart/cart-domain/events/product-removed-eve
 import { CartCurrencyConversionRateChangedEvent } from 'cart/cart-domain/events/cart-currency-conversion-rate-changed-event';
 import { Subject, Subscription } from 'rxjs';
 import { sequentialQueueOfAsync } from 'common/rxjs/custom-operators';
+import { ProductDataQuery } from '../../../../pricing/products/product-data.query';
+import { ProductDataDto } from 'pricing/products/dto/product-data.dto';
+import { Maybe } from 'common/ts-helpers';
 
 @EventsHandler(...domainEvents)
 export class CartReadRepositoryUpdateHandler
@@ -33,6 +42,7 @@ export class CartReadRepositoryUpdateHandler
     @Inject(CartReadStackTypes.CART_PRODUCTS_READ_REPOSITORY)
     private productsRepo: ICartProductsReadRepository,
     private eventBus: EventBus,
+    private queryBus: QueryBus,
   ) {
     this.queue$ = new Subject<ESEvent>();
 
@@ -74,14 +84,23 @@ export class CartReadRepositoryUpdateHandler
       }
       if (event instanceof ProductAddedEvent) {
         const cartProducts = await this.productsRepo.getForCartId(cartId);
+        const texts = (await this.queryBus.execute(
+          new ProductDataQuery(event.productId),
+        )) as Maybe<ProductDataDto>;
+        if (!texts) {
+          this.logger.error(
+            `Cannot find ProductDataDto for product ${event.productId}`,
+          );
+        }
+
         await this.productsRepo.store(
           cartProducts.withAddedProduct(
             new ProductReadDto(
               event.productId,
-              'Some name obtained from PIM',
+              texts?.name || 'Unknown product name',
               event.productPrice,
               event.quantity,
-              'Some description obtained from PIM',
+              texts?.description,
             ),
           ),
         );

@@ -6,13 +6,16 @@ import Dinero from 'dinero.js';
 import { CurrencyConversionService } from './currency-conversion/currency-conversion.service';
 import { ProductsController } from './products/products.controller';
 import { GetPriceForProductQueryHandler } from './queries/handlers';
+import { ProductsDataRepository } from './products/product-data.repository';
+import { ProductDataQueryHandler } from './products/product-data-query.handler';
 
-const queryHandlers = [GetPriceForProductQueryHandler];
+const queryHandlers = [GetPriceForProductQueryHandler, ProductDataQueryHandler];
 @Module({
   providers: [
     ProductPricingService,
     PriceListsService,
     CurrencyConversionService,
+    ProductsDataRepository,
     ...queryHandlers,
   ],
   exports: [ProductPricingService],
