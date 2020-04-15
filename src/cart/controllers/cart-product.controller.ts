@@ -24,7 +24,6 @@ import {
 import { CartByIdQuery } from '../cart-read-stack/queries/cart-by-id.query';
 import { CartProductInputDto } from './dtos/cart-product.dto';
 import { CartProductUpdateInputDto } from './dtos/cart-product-update-input.dto';
-import { ProductQuantityUpdatedEvent } from '../cart-domain/events/product-quantity-updated-event';
 import { ChangeProductQuantityCommand } from '../cart-domain/commands/change-product-quantity.command';
 import { RemoveProductCommand } from '../cart-domain/commands/remove-product.command';
 
