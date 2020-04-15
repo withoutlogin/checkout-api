@@ -1,8 +1,15 @@
-import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  NotFoundException,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ProductPrice } from './product-prices/product-price';
 import { ProductPricingService } from './product-prices/product-pricing.service';
 import { PriceListsService } from './pricelists/pricelists.service';
 import { Currency } from './money';
+import { CreatedLocationInterceptor } from '../common/rest/interceptors';
 
 @Controller('pricing')
 export class PricingController {
@@ -23,10 +30,10 @@ export class PricingController {
   ): Promise<ProductPrice[]> {
     const supportedCurrencies = await this.priceListsService.getSupportedCurrencies();
     if (supportedCurrencies.includes(currency as Currency)) {
-      const prices = await this.pricingService.getAllPricesInCurrency(
+      const prices = await this.pricingService.getPriceList(
         currency as Currency,
       );
-      return prices;
+      return Array.from(prices.values());
     }
     // throw new NotFoundException();
     return [];
