@@ -19,7 +19,22 @@ export class CartProductsReadDto {
   getProduct(productId: string): ProductReadDto | undefined {
     return this.products.find((p) => p.id === productId);
   }
+  getProducts(): ProductReadDto[] {
+    return this.products;
+  }
   withAddedProduct(product: ProductReadDto): CartProductsReadDto {
+    const existing = this.getProduct(product.id);
+    if (existing) {
+      return this.withChangedProduct(
+        new ProductReadDto(
+          existing.id,
+          existing.name,
+          existing.price,
+          existing.quantity + product.quantity,
+          existing.description,
+        ),
+      );
+    }
     return new CartProductsReadDto(this.cartId, [...this.products, product]);
   }
 
@@ -33,7 +48,7 @@ export class CartProductsReadDto {
   withChangedProduct(product: ProductReadDto): CartProductsReadDto {
     const idx = this.products.findIndex((p) => p.id === product.id);
     const products = this.products.slice();
-    if (idx > 1) {
+    if (idx > -1) {
       products[idx] = product;
     }
     return new CartProductsReadDto(this.cartId, products);

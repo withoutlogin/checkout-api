@@ -17,6 +17,11 @@ export const initialCartStateEvents: ESEvent[] = [
     precision: 2,
     currency: 'USD',
   }),
+  new ProductAddedEvent(cartId, firstProductId, 4, {
+    amount: 1400,
+    precision: 2,
+    currency: 'USD',
+  }),
   new ProductAddedEvent(cartId, secondProductId, 1, {
     amount: 899,
     precision: 2,
