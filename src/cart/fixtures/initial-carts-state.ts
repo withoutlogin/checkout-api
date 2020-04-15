@@ -1,6 +1,8 @@
 import { CartCreatedEvent } from 'cart/cart-domain/events/cart-created-event';
 import { ESEvent } from 'common/event-sourcing';
 import { ProductAddedEvent } from '../cart-domain/events/product-added-event';
+import { ProductQuantityUpdatedEvent } from '../cart-domain/events/product-quantity-updated-event';
+import { ProductRemovedEvent } from '../cart-domain/events/product-removed-event';
 
 const cartId = 'eb261ef2-da87-41c3-8005-dad1cf2d7438';
 const firstProductId = '2680ee73-8661-4248-a1a0-b77799fc8cb4';

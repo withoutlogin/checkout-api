@@ -89,9 +89,27 @@ export class CartReadRepositoryUpdateHandler
 
       if (event instanceof ProductRemovedEvent) {
         const cartProducts = await this.productsRepo.getForCartId(cartId);
-        await this.productsRepo.store(
-          cartProducts.withRemovedProduct(event.productId),
-        );
+        const existing = cartProducts.getProduct(event.productId);
+        if (existing) {
+          const left = existing.quantity - event.removedQuantity;
+          if (left <= 0) {
+            await this.productsRepo.store(
+              cartProducts.withRemovedProduct(event.productId),
+            );
+          } else {
+            await this.productsRepo.store(
+              cartProducts.withChangedProduct(
+                new ProductReadDto(
+                  existing.id,
+                  existing.name,
+                  existing.price,
+                  left,
+                  existing.description,
+                ),
+              ),
+            );
+          }
+        }
       }
 
       if (event instanceof ProductQuantityUpdatedEvent) {

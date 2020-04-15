@@ -9,9 +9,6 @@ export class ProductQuantityUpdatedEvent extends ESEvent {
   ) {
     super();
   }
-  getEventName(): string {
-    throw new Error('Method not implemented.');
-  }
 
   getSubjectName(): string {
     return Cart.name;
