@@ -1,14 +1,25 @@
 import { Module } from '@nestjs/common';
-import { CartDomainTypes } from '../cart-domain/cart-domain.types';
-import { CartRepository } from './cart-repository';
+import { CqrsModule } from '@nestjs/cqrs';
+import { IEventSourcingStore } from 'common/event-sourcing';
+import { CartEventStoreBasedRepository } from './cart-repository/cart-repository';
+import { SimpleEventSourcingStore } from './cart-repository/infrastructure/simple-event-sourcing-store';
+import { CartWriteStackTypes } from './cart-write-stack.types';
+import { eventHandlers } from './event-handlers';
+import { CartEventStoreUpdateHandler } from './event-handlers/cart-event-store-update-handler';
+import { queryHandlers } from './query-handlers';
 
 @Module({
-  exports: [CartDomainTypes.CART_REPOSITORY],
+  imports: [CqrsModule],
   providers: [
-    CartRepository,
+    ...eventHandlers,
+    ...queryHandlers,
+    CartEventStoreBasedRepository,
+    CartEventStoreUpdateHandler,
     {
-      provide: CartDomainTypes.CART_REPOSITORY,
-      useClass: CartRepository,
+      provide: CartWriteStackTypes.EVENT_SOURCING_STORE,
+      useFactory: (): IEventSourcingStore => {
+        return new SimpleEventSourcingStore([]);
+      },
     },
   ],
 })

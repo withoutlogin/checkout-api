@@ -1,15 +1,18 @@
-import { IMoneyData } from '../valueobjects/money';
+import { CartProduct, IMoneyData } from '../valueobjects';
 import Dinero from 'dinero.js';
 import { Money } from 'pricing/money';
-import { CartProduct } from '../valueobjects/cart-product';
+import { ESEvent } from 'common/event-sourcing/index';
+import { Cart } from '../cart';
 
-export class ProductAddedEvent {
+export class ProductAddedEvent extends ESEvent {
   constructor(
     public readonly cartId: string,
     public readonly productId: string,
     public readonly quantity: number,
     public readonly productPrice: IMoneyData,
-  ) {}
+  ) {
+    super();
+  }
 
   getPriceAsMoney(): Money {
     return Dinero(this.productPrice);
@@ -21,5 +24,11 @@ export class ProductAddedEvent {
       this.quantity,
       this.getPriceAsMoney(),
     );
+  }
+  getSubjectName(): string {
+    return Cart.name;
+  }
+  getSubjectIdentifier(): string {
+    return this.cartId;
   }
 }

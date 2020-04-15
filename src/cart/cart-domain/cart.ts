@@ -7,14 +7,44 @@ import { ProductAddedEvent } from './events/product-added-event';
 import { ProductRemovedEvent } from './events/product-removed-event';
 import { CartCurrency } from './valueobjects/cart-currency';
 import { CartProduct } from './valueobjects/cart-product';
+import { CartCreatedEvent } from './events/cart-created-event';
+import { DomainError } from 'common/ddd/errors';
+import Dinero from 'dinero.js';
 
 export class Cart extends AggregateRoot implements DomainEntity {
-  constructor(
-    public readonly id: string,
-    private currency: CartCurrency,
-    private products: Map<string, CartProduct>,
-  ) {
+  private _id?: string;
+  private currency?: CartCurrency;
+  private products = new Map<string, CartProduct>();
+
+  public get id(): string {
+    if (!this._id) {
+      throw new DomainError('Cart not initialized.');
+    }
+    return this._id;
+  }
+  constructor() {
     super();
+  }
+
+  initialize(id: string, currency: CartCurrency) {
+    if (this._id) {
+      throw new DomainError('Can be initialized only once.');
+    }
+    this.apply(
+      new CartCreatedEvent(
+        id,
+        currency.currency,
+        currency.conversionRate.toObject(),
+      ),
+    );
+  }
+
+  onCartCreatedEvent(event: CartCreatedEvent) {
+    this._id = event.cartId;
+    this.currency = new CartCurrency(
+      event.cartCurrencyName,
+      Dinero(event.cartCurrencyConversionRate),
+    );
   }
 
   addProduct(product: CartProduct): void {
@@ -38,7 +68,7 @@ export class Cart extends AggregateRoot implements DomainEntity {
   }
 
   updateCartCurrencyConversionRate(newCurrency: CartCurrency) {
-    if (newCurrency.currency !== this.currency.currency) {
+    if (newCurrency.currency !== this.currency?.currency) {
       throw new Error(
         'Method should be used to update conversion rate. To change currency use Cart.changeCurrency method.',
       );
@@ -57,7 +87,7 @@ export class Cart extends AggregateRoot implements DomainEntity {
   }
 
   changeCurrency(newCurrency: CartCurrency): void {
-    if (newCurrency.currency === this.currency.currency) {
+    if (newCurrency.currency === this.currency?.currency) {
       return;
     }
 
@@ -119,6 +149,9 @@ export class Cart extends AggregateRoot implements DomainEntity {
   }
 
   getCurrency(): CartCurrency {
+    if (!this.currency) {
+      throw new DomainError('Cart is not initialized and committed.');
+    }
     return this.currency;
   }
 }
