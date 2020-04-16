@@ -76,11 +76,7 @@ export class CartReadRepositoryUpdateHandler
 
       if (event instanceof CartCreatedEvent) {
         await this.repo.store(
-          new CartReadDto(
-            event.cartId,
-            event.cartCurrencyName,
-            event.cartCurrencyConversionRate,
-          ),
+          new CartReadDto(event.cartId, event.cartCurrency),
         );
       }
       if (event instanceof ProductAddedEvent) {

@@ -13,12 +13,12 @@ import { CartCurrency } from './valueobjects/cart-currency';
 import { CartProduct } from './valueobjects/cart-product';
 import { CartCreatedEvent } from './events/cart-created-event';
 import { DomainError } from 'common/ddd/errors';
-import Dinero from 'dinero.js';
 import { CartCheckedOutEvent } from './events/cart-checked-out-event';
+import { Currency } from 'pricing/money';
 
 export class Cart extends AggregateRoot implements DomainEntity {
-  private _id?: string;
-  private currency?: CartCurrency;
+  private _id!: string;
+  private currency!: Currency;
   private products = new Map<string, CartProduct>();
   private isCheckedOut = false;
 
@@ -32,25 +32,16 @@ export class Cart extends AggregateRoot implements DomainEntity {
     super();
   }
 
-  initialize(id: string, currency: CartCurrency) {
+  initialize(id: string, currency: Currency) {
     if (this._id) {
       throw new DomainError('Can be initialized only once.');
     }
-    this.apply(
-      new CartCreatedEvent(
-        id,
-        currency.currency,
-        currency.conversionRate.toObject(),
-      ),
-    );
+    this.apply(new CartCreatedEvent(id, currency));
   }
 
   onCartCreatedEvent(event: CartCreatedEvent) {
     this._id = event.cartId;
-    this.currency = new CartCurrency(
-      event.cartCurrencyName,
-      Dinero(event.cartCurrencyConversionRate),
-    );
+    this.currency = event.cartCurrency;
   }
 
   addProduct(product: CartProduct): void {
@@ -77,42 +68,48 @@ export class Cart extends AggregateRoot implements DomainEntity {
     }
   }
 
-  updateCartCurrencyConversionRate(newCurrency: CartCurrency) {
+  // updateCartCurrencyConversionRate(newCurrency: CartCurrency) {
+  //   if (this.isCheckedOut) {
+  //     throw new ForbiddenDomainActionError();
+  //   }
+  //   if (newCurrency.currency !== this.currency) {
+  //     throw new Error(
+  //       'Method should be used to update conversion rate. To change currency use Cart.changeCurrency method.',
+  //     );
+  //   }
+
+  //   this.apply(
+  //     new CartCurrencyConversionRateChangedEvent(this.id, newCurrency),
+  //   );
+  // }
+
+  // onCartCurrencyConversionRateChangedEvent(
+  //   event: CartCurrencyConversionRateChangedEvent,
+  // ) {
+  //   this.currency = event.
+  // }
+
+  changeCurrency(
+    newCurrency: Currency,
+    recalculatedProducts: CartProduct[],
+  ): void {
     if (this.isCheckedOut) {
       throw new ForbiddenDomainActionError();
     }
-    if (newCurrency.currency !== this.currency?.currency) {
-      throw new Error(
-        'Method should be used to update conversion rate. To change currency use Cart.changeCurrency method.',
-      );
-    }
-
-    this.apply(
-      new CartCurrencyConversionRateChangedEvent(this.id, newCurrency),
-    );
-  }
-
-  onCartCurrencyConversionRateChangedEvent(
-    event: CartCurrencyConversionRateChangedEvent,
-  ) {
-    this.currency = event.newCurrency;
-    // todo: recalculate products
-  }
-
-  changeCurrency(newCurrency: CartCurrency): void {
-    if (this.isCheckedOut) {
-      throw new ForbiddenDomainActionError();
-    }
-    if (newCurrency.currency === this.currency?.currency) {
+    if (newCurrency === this.currency) {
       return;
     }
 
-    this.apply(new CartCurrencyChangedEvent(this.id, newCurrency));
+    this.apply(
+      new CartCurrencyChangedEvent(this.id, newCurrency, recalculatedProducts),
+    );
   }
 
   onCartCurrencyChangedEvent(event: CartCurrencyChangedEvent): void {
     this.currency = event.newCurrency;
-    // todo: recalculate products
+    event.recalculatedCartProducts.forEach((product) => {
+      this.products.set(product.productId, product);
+    });
   }
 
   removeProduct(productId: string) {
@@ -170,6 +167,10 @@ export class Cart extends AggregateRoot implements DomainEntity {
     return this.products.get(productId);
   }
 
+  getProducts(): CartProduct[] {
+    return Array.from(this.products.values());
+  }
+
   markAsCheckedOut(): void {
     if (this.isCheckedOut) {
       return;
@@ -192,7 +193,7 @@ export class Cart extends AggregateRoot implements DomainEntity {
     this.isCheckedOut = true;
   }
 
-  getCurrency(): CartCurrency {
+  getCurrency(): Currency {
     if (!this.currency) {
       throw new DomainError('Cart is not initialized and committed.');
     }

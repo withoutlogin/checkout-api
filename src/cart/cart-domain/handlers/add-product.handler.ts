@@ -31,7 +31,7 @@ export class AddProductHandler implements ICommandHandler<AddProductCommand> {
 
     const cart = this.publisher.mergeObjectContext(cartOrNothing);
     const price = (await this.queryBus.execute(
-      new GetPriceForProductQuery(productId, cart.getCurrency().currency),
+      new GetPriceForProductQuery(productId, cart.getCurrency()),
     )) as Maybe<ProductPrice>;
 
     if (!price) {

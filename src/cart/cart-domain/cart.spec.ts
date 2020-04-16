@@ -14,13 +14,7 @@ import {
 
 const createEmptyCart = (currency: Currency = 'USD'): Cart => {
   const c = new Cart();
-  c.initialize(
-    uuidv4(),
-    new CartCurrency(
-      currency,
-      Dinero({ amount: 1, precision: 1, currency: currency }),
-    ),
-  );
+  c.initialize(uuidv4(), currency);
   c.commit();
   return c;
 };
@@ -106,7 +100,7 @@ describe('Cart.removeProduct', () => {
         Dinero({
           amount: 1500,
           precision: 2,
-          currency: cart.getCurrency().currency,
+          currency: cart.getCurrency(),
         }),
       ),
     );
@@ -117,7 +111,7 @@ describe('Cart.removeProduct', () => {
         Dinero({
           amount: 3499,
           precision: 2,
-          currency: cart.getCurrency().currency,
+          currency: cart.getCurrency(),
         }),
       ),
     );
@@ -216,7 +210,7 @@ describe('Cart.changeProductQuantity', () => {
         Dinero({
           amount: 1500,
           precision: 2,
-          currency: cart.getCurrency().currency,
+          currency: cart.getCurrency(),
         }),
       ),
     );
@@ -306,36 +300,53 @@ describe('Cart.changeCurrency', () => {
 
   it('should change existing Cart currency', () => {
     // given
-    const newCurrency = new CartCurrency(
-      'EUR',
-      Dinero({ amount: 92, precision: 2, currency: 'USD' }),
+    const targetCurrency = 'EUR';
+    const conversionRate = 0.92;
+    const converted = cart.getProducts().map(
+      (p) =>
+        new CartProduct(
+          p.productId,
+          p.quantity,
+          Dinero({
+            currency: targetCurrency,
+            amount: p.price.multiply(conversionRate).getAmount(),
+            precision: p.price.getPrecision(),
+          }),
+        ),
     );
 
     // when
-    cart.changeCurrency(newCurrency);
+    cart.changeCurrency('EUR', converted);
     cart.commit();
 
     // then
-    expect(cart.getCurrency()).toEqual(newCurrency);
+    expect(cart.getCurrency()).toEqual(targetCurrency);
   });
 
-  it('should keep original product currency', () => {
+  it('should use recalculated products', () => {
     // given
-    const newCurrency = new CartCurrency(
-      'EUR',
+    const targetCurrency = 'PLN';
+    const recalculatedProduct = new CartProduct(
+      cartProductId,
+      5,
       Dinero({
-        amount: 92,
+        amount: 2300,
         precision: 2,
-        currency: 'USD',
+        currency: targetCurrency,
       }),
     );
 
     // when
-    cart.changeCurrency(newCurrency);
+    cart.changeCurrency(targetCurrency, [recalculatedProduct]);
     cart.commit();
 
     // then
-    expect(cart.getProduct(cartProductId)?.price.getCurrency()).toEqual('USD');
+    expect(cart.getProduct(cartProductId)?.price.getCurrency()).toEqual(
+      targetCurrency,
+    );
+    expect(
+      cart.getProduct(cartProductId)?.price.equalsTo(recalculatedProduct.price),
+    ).toBe(true);
   });
 
   it('should throw ForbiddenDomainActionError when cart has been checked out', () => {
@@ -343,18 +354,9 @@ describe('Cart.changeCurrency', () => {
     cart.markAsCheckedOut();
     cart.commit();
 
-    const newCurrency = new CartCurrency(
-      'EUR',
-      Dinero({
-        amount: 92,
-        precision: 2,
-        currency: 'USD',
-      }),
-    );
-
     // when
-    expect(() => cart.changeCurrency(newCurrency)).toThrow(
-      ForbiddenDomainActionError,
-    );
+    expect(() =>
+      cart.changeCurrency(cart.getCurrency(), cart.getProducts()),
+    ).toThrow(ForbiddenDomainActionError);
   });
 });

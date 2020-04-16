@@ -20,17 +20,8 @@ export class CreateCartHandler implements ICommandHandler<CreateCartCommand> {
       throw new ConflictException();
     }
 
-    const cartCurrency = new CartCurrency(
-      currency,
-      Dinero({
-        amount: 1,
-        precision: 0,
-        currency: 'USD',
-      }),
-    );
-
     const cart = this.publisher.mergeObjectContext(new Cart());
-    cart.initialize(id, cartCurrency);
+    cart.initialize(id, currency);
     cart.commit();
   }
 }
