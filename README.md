@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/withoutlogin/checkout-api.svg?style=shield)](https://circleci.com/gh/withoutlogin/checkout-api)
+
 # Cart API
 
 This app was built on the NestJS framework and provides REST API for e-commerce cart functionality.
@@ -7,7 +9,7 @@ This app was built on the NestJS framework and provides REST API for e-commerce 
 This app consists of four main modules:
 
 - `CartDomainModule` which covers the logic for cart mutations,
-- `CartWriteModule` which is persistence layer for Domain,
+- `CartWriteModule` which is a persistence layer for the Domain,
 - `CartReadModule` that stores and serves current Cart state based on in-memory materialized views,
 - `PricingModule` which provides product-related data like prices and descriptions for other modules.
 
@@ -20,7 +22,6 @@ When the application is running, go to `http://localhost:3000/` to load Swagger 
 ## Installation
 
 ```bash
-
 $ yarn install
 ```
 
