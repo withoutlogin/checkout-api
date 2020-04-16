@@ -21,7 +21,6 @@ export class CurrencyConversionService {
         if (price.price.getCurrency() === toCurrency) {
           return price;
         }
-        console.log('from', price.price.getCurrency(), 'to', toCurrency);
         const newPrice = await price.price.convert(toCurrency, {
           endpoint: this.conversionRatesService.getConversionRatesFor(
             price.price.getCurrency() as Currency,

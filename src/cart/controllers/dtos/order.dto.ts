@@ -13,21 +13,12 @@ export class OrderDto {
   id!: string;
   @ApiProperty()
   currency!: Currency;
-  @ApiProperty()
-  totals!: OrderSummary;
-
   @ApiProperty({ type: [OrderProduct] })
   products!: OrderProduct[];
 
-  constructor(
-    id: string,
-    currency: Currency,
-    totals: OrderSummary,
-    products: OrderProduct[],
-  ) {
+  constructor(id: string, currency: Currency, products: OrderProduct[]) {
     this.id = id;
     this.currency = currency;
-    this.totals = totals;
     this.products = products;
   }
 }
