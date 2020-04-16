@@ -9,7 +9,10 @@ import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { Logger } from '@nestjs/common';
 import { tap } from 'rxjs/operators';
-import { ResourceCreatedInCollection } from './response';
+import {
+  ResourceCreatedInCollection,
+  ResourceCreatedWithLocation,
+} from './response';
 import { ServerResponse } from 'http';
 
 function isExpressRequest(request: Request): request is Request {
@@ -40,12 +43,16 @@ export class CreatedLocationInterceptor implements NestInterceptor {
       return next.handle().pipe(
         tap((arg) => {
           const path = request.path;
-          if (
-            response.statusCode === 201 &&
-            arg instanceof ResourceCreatedInCollection
-          ) {
-            const resourceUrl = `${path}/${arg.resourceId}`;
-            response.setHeader('Location', resourceUrl);
+          if (response.statusCode === 201) {
+            let location: string | undefined = undefined;
+            if (arg instanceof ResourceCreatedInCollection) {
+              location = `${path}/${arg.resourceId}`;
+            } else if (arg instanceof ResourceCreatedWithLocation) {
+              location = arg.location;
+            }
+            if (location) {
+              response.setHeader('Location', location);
+            }
           }
         }),
       );

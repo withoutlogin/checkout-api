@@ -154,4 +154,7 @@ export class Cart extends AggregateRoot implements DomainEntity {
     }
     return this.currency;
   }
+  canBeCheckedOut(): boolean {
+    return this.products.size > 0;
+  }
 }
