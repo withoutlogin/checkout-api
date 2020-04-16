@@ -3,7 +3,6 @@ import { CartProductController } from './cart-product.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 
 describe('CartProduct Controller', () => {
-  // todo controller test
   let controller: CartProductController;
 
   beforeEach(async () => {

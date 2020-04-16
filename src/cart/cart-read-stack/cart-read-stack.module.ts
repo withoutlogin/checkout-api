@@ -10,10 +10,6 @@ import { CartReadRepositoryUpdateHandler } from './repositories/updating/cart-re
 
 @Module({
   imports: [CqrsModule],
-  exports: [
-    // CartReadStackTypes.CART_PRODUCTS_READ_REPOSITORY,
-    // CartReadStackTypes.CART_READ_REPOSITORY,
-  ],
   providers: [
     ...QueryHandlers,
     CartReadRepositoryUpdateHandler,

@@ -21,16 +21,4 @@ describe('Cart Controller', () => {
     expect(controller).toBeDefined();
     expect(queryBus).toBeDefined();
   });
-
-  // it('should execute CartByIdQuery', async (done) => {
-  //   // having
-  //   const someCartId = uuidv4();
-  //   queryBus.execute = jest.fn().mockReturnValue(Promise.resolve());
-
-  //   // expect
-  //   expect(queryBus.execute).toBeCalledWith(new CartByIdQuery(someCartId));
-
-  //   // when
-  //   controller.getCart(someCartId);
-  // });
 });

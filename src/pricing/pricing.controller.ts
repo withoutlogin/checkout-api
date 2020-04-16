@@ -38,7 +38,6 @@ export class PricingController {
       );
       return Array.from(prices.values());
     }
-    // throw new NotFoundException();
     return [];
   }
 

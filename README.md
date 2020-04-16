@@ -1,6 +1,6 @@
 # Cart API
 
-This app was built on NestJS framework and provides REST API for e-commerce cart functionality.
+This app was built on the NestJS framework and provides REST API for e-commerce cart functionality.
 
 ## Architecture
 
@@ -15,7 +15,7 @@ Project incorporates Command-Query Responsibility Segregation (CQRS) and Event S
 
 ## Docs
 
-When application is running, go to `http://localhost:3000/` to load Swagger UI, which shows all of the REST endpoints and allows to run queries from the browser. Most of endpoints are configured with sample parameter values that are valid with automatically loaded sample data.
+When the application is running, go to `http://localhost:3000/` to load Swagger UI, which shows all of the REST endpoints and allows to run queries from the browser. Most of endpoints are configured with sample parameter values that are valid with automatically loaded sample data.
 
 ## Installation
 
@@ -34,6 +34,7 @@ $ yarn start
 $ yarn start:dev
 
 # production mode
+$ yarn build
 $ yarn start:prod
 ```
 
