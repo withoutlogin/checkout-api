@@ -8,7 +8,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Cart } from 'cart/cart-domain/cart';
 import { CartCheckoutCommand } from 'cart/cart-domain/commands/cart-checkout.command';
 import { CartNotFound } from 'cart/cart-domain/errors';
@@ -30,6 +30,9 @@ export class CheckoutController {
   constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
 
   @Post()
+  @ApiOperation({
+    description: 'Finalizes the order with given cart.',
+  })
   @ApiResponse({
     status: 400,
     description: 'Returned when unknown cartId given.',

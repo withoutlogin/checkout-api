@@ -12,7 +12,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { CartProductsQuery } from 'cart/cart-read-stack/queries/cart-products.query';
 import { CreatedLocationInterceptor } from 'common/rest/interceptors';
 import { ResourceCreatedInCollection } from '../../common/rest/response';
@@ -33,7 +33,7 @@ export class CartProductController {
   constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
 
   @Get('/')
-  @ApiResponse({ type: [ProductReadDto] })
+  @ApiResponse({ status: 200, type: [ProductReadDto] })
   @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
   async getProductsInCart(
     @Param('cartId') cartId: string,
@@ -51,6 +51,9 @@ export class CartProductController {
   }
 
   @Post('/')
+  @ApiOperation({
+    description: 'Adds new product to cart.',
+  })
   @ApiResponse({ type: ResourceCreatedInCollection })
   @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
   async addNewProductToCart(
@@ -71,6 +74,9 @@ export class CartProductController {
   }
 
   @Get(':productId')
+  @ApiOperation({
+    description: 'Returns current state of product in the cart.',
+  })
   @ApiParam({
     name: 'productId',
     example: '2680ee73-8661-4248-a1a0-b77799fc8cb4',
@@ -97,6 +103,9 @@ export class CartProductController {
   }
 
   @Put(':productId')
+  @ApiOperation({
+    description: `Allows to update product's quantity.`,
+  })
   @HttpCode(204)
   @ApiResponse({ status: 404, description: 'Resource not found.' })
   @ApiResponse({ status: 204, description: 'Updated successfully.' })
@@ -134,6 +143,9 @@ export class CartProductController {
   }
 
   @Delete(':productId')
+  @ApiOperation({
+    description: 'Deletes product from the cart.',
+  })
   @HttpCode(204)
   @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
   @ApiParam({
