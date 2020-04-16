@@ -50,7 +50,7 @@ export class CheckoutController {
     )) as Maybe<Cart>;
 
     if (!cart) {
-      throw new BadRequestException();
+      throw new BadRequestException(null, 'Cart not found');
     }
 
     const orderId = uuidv4();

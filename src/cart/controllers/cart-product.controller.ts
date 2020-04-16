@@ -10,6 +10,7 @@ import {
   Put,
   Delete,
   HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiParam, ApiResponse, ApiOperation } from '@nestjs/swagger';
@@ -119,6 +120,10 @@ export class CartProductController {
     @Param('productId') productId: string,
     @Body() productUpdateInput: CartProductUpdateInputDto,
   ): Promise<void> {
+    if (productUpdateInput.quantity <= 0) {
+      throw new BadRequestException(null, 'Quantity cannot be negative');
+    }
+
     const cart = await this.queryBus.execute(new CartByIdQuery(cartId));
     if (!cart) {
       throw new NotFoundException();

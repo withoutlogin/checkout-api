@@ -6,7 +6,11 @@ import { Currency } from 'pricing/money';
 import { ProductAddedEvent } from './events/product-added-event';
 import { CartProduct } from './valueobjects/cart-product';
 import { DomainError } from '../../common/ddd/errors';
-import { ProductNotFoundInCart, ForbiddenDomainActionError } from './errors';
+import {
+  ProductNotFoundInCart,
+  ForbiddenDomainActionError,
+  InvalidQuantityError,
+} from './errors';
 
 const createEmptyCart = (currency: Currency = 'USD'): Cart => {
   const c = new Cart();
@@ -255,11 +259,11 @@ describe('Cart.changeProductQuantity', () => {
     expect(cart.getProduct(existingProductId)).toBeUndefined();
   });
 
-  it('should throw DomainError when decreasing quantity below zero', () => {
+  it('should throw InvalidQuantityError when decreasing quantity below zero', () => {
     // when
     expect(() =>
       cart.changeProductQuantity(existingProductId, -4),
-    ).toThrowError(DomainError);
+    ).toThrowError(InvalidQuantityError);
   });
 
   it('should throw ProductNotFoundInCart when decreasing quantity of not existing product', () => {

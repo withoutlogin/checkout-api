@@ -1,5 +1,6 @@
 import { Money } from 'pricing/money';
 import { DomainError } from 'common/ddd/errors';
+import { InvalidQuantityError } from '../errors';
 
 export class CartProduct {
   constructor(
@@ -23,7 +24,7 @@ export class CartProduct {
   withSubtracted(nItems: number): CartProduct {
     const destQuantity = this.quantity - nItems;
     if (destQuantity < 0) {
-      throw new DomainError('Quantity cannot be negative.');
+      throw new InvalidQuantityError('Quantity cannot be negative.');
     }
 
     return new CartProduct(this.productId, destQuantity, this.price);
