@@ -8,3 +8,7 @@ export class CartNotFound extends NotFoundException {}
 export class ForbiddenDomainActionError extends ForbiddenException {}
 
 export class CannotCheckoutEmptyCart extends DomainError {}
+
+export class InvalidQuantityError extends DomainError {}
+
+export class PriceForProductUnknownError extends DomainError {}

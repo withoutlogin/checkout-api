@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import Dinero from 'dinero.js';
-import { ProductPrice } from './product-price';
 import { Maybe } from 'common/ts-helpers';
-import { initialProductPricing } from 'pricing/fixtures/initial-product-pricing-and-texts';
-import { Currency } from 'pricing/money';
 import { CurrencyConversionService } from 'pricing/currency-conversion/currency-conversion.service';
+import { Currency } from 'pricing/money';
 import { getInitialProductPricingAsPriceListMap } from '../fixtures/initial-product-pricing-and-texts';
+import { ProductPrice } from './product-price';
 
 export type PriceListMap = Map<string, ProductPrice>;
 @Injectable()

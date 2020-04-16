@@ -1,8 +1,8 @@
-import { IQuery, IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Maybe } from 'common/ts-helpers';
+import { ProductDataDto } from './dto/product-data.dto';
 import { ProductDataQuery } from './product-data.query';
 import { ProductsDataRepository } from './product-data.repository';
-import { ProductDataDto } from './dto/product-data.dto';
-import { Maybe } from 'common/ts-helpers';
 
 @QueryHandler(ProductDataQuery)
 export class ProductDataQueryHandler

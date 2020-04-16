@@ -4,15 +4,14 @@ import {
   ICommandHandler,
   QueryBus,
 } from '@nestjs/cqrs';
+import { Maybe } from 'common/ts-helpers';
+import { ProductPrice } from 'pricing/product-prices/product-price';
+import { GetPriceForProductQuery } from 'pricing/queries';
 import { DomainError } from '../../../common/ddd/errors';
 import { Cart } from '../cart';
 import { AddProductCommand } from '../commands/add-product.command';
 import { GetCartDomainModelQuery } from '../queries';
 import { CartProduct } from '../valueobjects/cart-product';
-import { Money } from '../../../pricing/money';
-import { Maybe } from 'common/ts-helpers';
-import { GetPriceForProductQuery } from 'pricing/queries';
-import { ProductPrice } from 'pricing/product-prices/product-price';
 
 @CommandHandler(AddProductCommand)
 export class AddProductHandler implements ICommandHandler<AddProductCommand> {
@@ -31,7 +30,7 @@ export class AddProductHandler implements ICommandHandler<AddProductCommand> {
 
     const cart = this.publisher.mergeObjectContext(cartOrNothing);
     const price = (await this.queryBus.execute(
-      new GetPriceForProductQuery(productId, cart.getCurrency().currency),
+      new GetPriceForProductQuery(productId, cart.getCurrency()),
     )) as Maybe<ProductPrice>;
 
     if (!price) {

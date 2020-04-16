@@ -2,13 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Logger,
   Post,
   UseInterceptors,
-  Get,
-  Logger,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Cart } from 'cart/cart-domain/cart';
 import { CartCheckoutCommand } from 'cart/cart-domain/commands/cart-checkout.command';
 import { CartNotFound } from 'cart/cart-domain/errors';
@@ -30,6 +29,9 @@ export class CheckoutController {
   constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
 
   @Post()
+  @ApiOperation({
+    description: 'Finalizes the order with given cart.',
+  })
   @ApiResponse({
     status: 400,
     description: 'Returned when unknown cartId given.',
@@ -47,7 +49,7 @@ export class CheckoutController {
     )) as Maybe<Cart>;
 
     if (!cart) {
-      throw new BadRequestException();
+      throw new BadRequestException(null, 'Cart not found');
     }
 
     const orderId = uuidv4();

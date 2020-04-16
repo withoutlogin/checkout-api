@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { ProductDataDto } from './dto/product-data.dto';
 import { ProductsDataRepository } from './product-data.repository';
 
@@ -9,6 +9,9 @@ export class ProductsController {
 
   @Get()
   @ApiResponse({ type: [ProductDataDto] })
+  @ApiOperation({
+    description: 'Returns collection of products possible to add to cart.',
+  })
   async getProducts(): Promise<ProductDataDto[]> {
     return this.repo.getProducts();
   }

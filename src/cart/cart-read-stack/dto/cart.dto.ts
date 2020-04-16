@@ -19,30 +19,9 @@ export class CartReadDto {
   cartId: string;
   @ApiProperty()
   currency: string;
-  @ApiProperty({
-    type: IMoneyDataDto,
-    example: { amount: 1, precision: 0, currency: 'USD' },
-  })
-  conversionRate: IMoneyData;
-  @ApiProperty({ type: CartTotalsDto })
-  totals: CartTotals;
 
-  constructor(
-    cartId: string,
-    currency: Currency,
-    conversionRate: IMoneyData,
-    totals: CartTotals = {
-      valueWithCurrencyConverted: {
-        amount: 0,
-        precision: 2,
-        currency: currency,
-      },
-      itemsCount: 0,
-    },
-  ) {
+  constructor(cartId: string, currency: Currency) {
     this.cartId = cartId;
     this.currency = currency;
-    this.conversionRate = conversionRate;
-    this.totals = totals;
   }
 }

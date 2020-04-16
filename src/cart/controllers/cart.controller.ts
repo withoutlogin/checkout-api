@@ -6,6 +6,9 @@ import {
   Param,
   Post,
   UseInterceptors,
+  Put,
+  Body,
+  HttpCode,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateCartCommand } from 'cart/cart-domain/commands/create-cart.command';
@@ -16,7 +19,9 @@ import { ResourceCreatedInCollection } from 'common/rest/response';
 import { Maybe } from 'common/ts-helpers';
 import { v4 as uuidv4 } from 'uuid';
 import { Currency } from '../../pricing/money';
-import { ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiResponse, ApiParam, ApiOperation } from '@nestjs/swagger';
+import { CartCurrencyChangeInputDto } from './dtos/cart-currency-change-input.dto';
+import { ChangeCartCurrencyCommand } from '../cart-domain/commands/change-cart-currency.command';
 
 /**
  * @todo implementation based on repo
@@ -29,6 +34,9 @@ export class CartController {
   constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
 
   @Post('')
+  @ApiOperation({
+    description: 'Allows to create new cart.',
+  })
   @ApiResponse({
     type: ResourceCreatedInCollection,
     status: 201,
@@ -45,6 +53,9 @@ export class CartController {
   }
 
   @Get(':cartId')
+  @ApiOperation({
+    description: 'Returns cart definition.',
+  })
   @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
   @ApiResponse({ type: CartReadDto })
   async getCart(@Param('cartId') cartId: string): Promise<CartReadDto> {
@@ -59,15 +70,26 @@ export class CartController {
     throw new NotFoundException();
   }
 
-  // @Get(':cartId/products')
-  // async getCartProducts(
-  //   @Param('cartId') cartId: string,
-  // ): Promise<CartProductReadDto[]> {
-  //   const cart = await this.getCart(cartId);
-  //   if (!cart) {
-  //     throw new NotFoundException();
-  //   }
+  @Put(':cartId')
+  @HttpCode(204)
+  @ApiOperation({
+    description: 'Allows to change currency the cart is operating in.',
+  })
+  @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
+  async changeCartCurrency(
+    @Param('cartId') cartId: string,
+    @Body() input: CartCurrencyChangeInputDto,
+  ): Promise<void> {
+    const result = (await this.queryBus.execute(
+      new CartByIdQuery(cartId),
+    )) as Maybe<CartReadDto>;
 
-  //   return this.cartFinder.getProductsFor(cart.id);
-  // }
+    if (!result) {
+      throw new NotFoundException();
+    }
+
+    this.commandBus.execute(
+      new ChangeCartCurrencyCommand(cartId, input.currency),
+    );
+  }
 }

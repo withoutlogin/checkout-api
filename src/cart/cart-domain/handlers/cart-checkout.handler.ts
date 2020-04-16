@@ -49,7 +49,7 @@ export class CartCheckoutCommandHandler
 
       const order = builder
         .withId(command.newOrderId)
-        .withCurrency(cart.getCurrency().currency)
+        .withCurrency(cart.getCurrency())
         .withProducts(cartReadDto)
         .build();
       if (order) {

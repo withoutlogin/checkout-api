@@ -8,6 +8,7 @@ import { ProductsController } from './products/products.controller';
 import { GetPriceForProductQueryHandler } from './queries/handlers';
 import { ProductsDataRepository } from './products/product-data.repository';
 import { ProductDataQueryHandler } from './products/product-data-query.handler';
+import { CurrencyConversionRatesService } from './currency-conversion/currency-conversion-rates.service';
 
 const queryHandlers = [GetPriceForProductQueryHandler, ProductDataQueryHandler];
 @Module({
@@ -15,6 +16,7 @@ const queryHandlers = [GetPriceForProductQueryHandler, ProductDataQueryHandler];
     ProductPricingService,
     PriceListsService,
     CurrencyConversionService,
+    CurrencyConversionRatesService,
     ProductsDataRepository,
     ...queryHandlers,
   ],
