@@ -13,13 +13,7 @@ async function bootstrap() {
   app.enableCors();
   app.use(helmet());
 
-  const swaggerOptions = new DocumentBuilder()
-    .setTitle('Cart API')
-    .setDescription('REST API for e-commerce cart feature.')
-    .setVersion('1.0.0')
-    .build();
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions);
-  SwaggerModule.setup('', app, swaggerDocument);
+  AppModule.registerSwagger(app);
 
   await app.listen(3000);
 
