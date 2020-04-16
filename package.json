@@ -36,13 +36,13 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "source-map-support": "^0.5.16",
-    "start-server-webpack-plugin": "^2.2.5",
     "swagger-ui-express": "^4.1.4",
-    "uuid": "^7.0.3",
-    "webpack": "^4.42.1",
-    "webpack-node-externals": "^1.7.2"
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
+    "start-server-webpack-plugin": "^2.2.5",
+    "webpack": "^4.42.1",
+    "webpack-node-externals": "^1.7.2",
     "@commitlint/config-conventional": "^8.3.4",
     "@nestjs/cli": "^7.1.2",
     "@nestjs/schematics": "^7.0.0",
