@@ -23,10 +23,10 @@ export class PricingController {
   ): Promise<ProductPrice[]> {
     const supportedCurrencies = await this.priceListsService.getSupportedCurrencies();
     if (supportedCurrencies.includes(currency as Currency)) {
-      const prices = await this.pricingService.getAllPricesInCurrency(
+      const prices = await this.pricingService.getPriceList(
         currency as Currency,
       );
-      return prices;
+      return Array.from(prices.values());
     }
     // throw new NotFoundException();
     return [];

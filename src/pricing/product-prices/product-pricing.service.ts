@@ -1,21 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import Dinero from 'dinero.js';
-import { productPrices } from '../data';
-import { Currency } from '../money';
 import { ProductPrice } from './product-price';
+import { Maybe } from 'common/ts-helpers';
+import { initialProductPricing } from 'pricing/fixtures/initial-product-pricing-and-texts';
+import { Currency } from 'pricing/money';
+import { CurrencyConversionService } from 'pricing/currency-conversion/currency-conversion.service';
+import { getInitialProductPricingAsPriceListMap } from '../fixtures/initial-product-pricing-and-texts';
 
+export type PriceListMap = Map<string, ProductPrice>;
 @Injectable()
 export class ProductPricingService {
-  // todo use external data access layer
-  // constructor(
-  // @Inject(PricingTypes.PRICES_DAL) private pricesDb: IProductPricesDAL,
-  //) {}
+  pricelists: Map<string, PriceListMap>;
+  basePriceList: PriceListMap;
 
-  async getPriceFor(productId: string): Promise<ProductPrice | undefined> {
-    const entry = productPrices.find((entry) => entry.productId === productId);
-    if (entry) {
-      return new ProductPrice(entry.productId, Dinero(entry.price));
+  constructor(private priceConversionService: CurrencyConversionService) {
+    this.pricelists = new Map<Currency, PriceListMap>();
+    this.basePriceList = this.loadFixture();
+  }
+
+  private loadFixture(): PriceListMap {
+    return getInitialProductPricingAsPriceListMap();
+  }
+
+  async getPriceList(priceListCurrency: Currency): Promise<PriceListMap> {
+    const p = this.pricelists.get(priceListCurrency);
+    if (p) {
+      return p;
     }
+    const converted = await this.priceConversionService.convertPriceList(
+      this.basePriceList,
+      priceListCurrency,
+    );
+    this.pricelists.set(priceListCurrency, converted);
+    return converted;
   }
 
   /**
@@ -25,28 +42,8 @@ export class ProductPricingService {
   async getPriceInCurrency(
     productId: string,
     currency: Currency,
-  ): Promise<ProductPrice | undefined> {
-    const productPrice = await this.getPriceFor(productId);
-    if (productPrice) {
-      if (productPrice.price.getCurrency() === currency) {
-        return productPrice;
-      }
-      const convertedPrice = await productPrice.price.convert(currency);
-      return new ProductPrice(productPrice.productId, convertedPrice);
-    }
-  }
-
-  async getAllPricesInCurrency(currency: Currency): Promise<ProductPrice[]> {
-    return Promise.all(
-      productPrices.map(
-        async (entry): Promise<ProductPrice> => {
-          let price = Dinero(entry.price);
-          if (entry.price.currency !== currency) {
-            price = await price.convert(currency);
-          }
-          return new ProductPrice(entry.productId, price);
-        },
-      ),
-    );
+  ): Promise<Maybe<ProductPrice>> {
+    const priceList = await this.getPriceList(currency);
+    return priceList.get(productId);
   }
 }

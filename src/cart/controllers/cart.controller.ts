@@ -16,6 +16,7 @@ import { ResourceCreatedInCollection } from 'common/rest/response';
 import { Maybe } from 'common/ts-helpers';
 import { v4 as uuidv4 } from 'uuid';
 import { Currency } from '../../pricing/money';
+import { ApiResponse, ApiParam } from '@nestjs/swagger';
 
 /**
  * @todo implementation based on repo
@@ -28,7 +29,12 @@ export class CartController {
   constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
 
   @Post('')
-  async createCart(): Promise<string | ResourceCreatedInCollection> {
+  @ApiResponse({
+    type: ResourceCreatedInCollection,
+    status: 201,
+    description: 'New cart created',
+  })
+  async createCart(): Promise<ResourceCreatedInCollection> {
     const defaultCurrency: Currency = 'USD';
     const id = uuidv4();
 
@@ -39,6 +45,8 @@ export class CartController {
   }
 
   @Get(':cartId')
+  @ApiParam({ name: 'cartId', example: 'eb261ef2-da87-41c3-8005-dad1cf2d7438' })
+  @ApiResponse({ type: CartReadDto })
   async getCart(@Param('cartId') cartId: string): Promise<CartReadDto> {
     const result = (await this.queryBus.execute(
       new CartByIdQuery(cartId),
