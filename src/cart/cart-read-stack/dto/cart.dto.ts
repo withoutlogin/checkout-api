@@ -20,23 +20,8 @@ export class CartReadDto {
   @ApiProperty()
   currency: string;
 
-  @ApiProperty({ type: CartTotalsDto })
-  totals: CartTotals;
-
-  constructor(
-    cartId: string,
-    currency: Currency,
-    totals: CartTotals = {
-      valueWithCurrencyConverted: {
-        amount: 0,
-        precision: 2,
-        currency: currency,
-      },
-      itemsCount: 0,
-    },
-  ) {
+  constructor(cartId: string, currency: Currency) {
     this.cartId = cartId;
     this.currency = currency;
-    this.totals = totals;
   }
 }

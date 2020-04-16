@@ -6,17 +6,17 @@ import {
 } from '@nestjs/cqrs';
 import { CartNotFound } from '../errors';
 import { CartDomainRepository } from '../repositories/index';
-import { CartProduct } from '../valueobjects';
 import { GetPriceForProductQuery } from '../../../pricing/queries/index';
-import { ChangeCartCurrency } from '../commands/change-cart-currency.command';
 import { ProductPrice } from 'pricing/product-prices/product-price';
 import { Maybe } from 'common/ts-helpers';
 import { PriceForProductUnknownError } from '../errors/index';
 import { Logger } from '@nestjs/common';
+import { ChangeCartCurrencyCommand } from '../commands/change-cart-currency.command';
+import { CartProduct } from '../valueobjects';
 
-@CommandHandler(ChangeCartCurrency)
+@CommandHandler(ChangeCartCurrencyCommand)
 export class ChangeCartCurrencyHandler
-  implements ICommandHandler<ChangeCartCurrency> {
+  implements ICommandHandler<ChangeCartCurrencyCommand> {
   private logger = new Logger(ChangeCartCurrencyHandler.name);
   constructor(
     private cartRepository: CartDomainRepository,
@@ -24,7 +24,7 @@ export class ChangeCartCurrencyHandler
     private queryBus: QueryBus,
   ) {}
 
-  async execute(command: ChangeCartCurrency): Promise<void> {
+  async execute(command: ChangeCartCurrencyCommand): Promise<void> {
     const { cartId, newCurrency } = command;
     const cart = await this.cartRepository.load(cartId);
     if (!cart) {
@@ -50,11 +50,16 @@ export class ChangeCartCurrencyHandler
 
     try {
       const newPrices = await Promise.all(promises);
+      const convertedProducts: CartProduct[] = [];
       newPrices.forEach((price) => {
-        const product = cartAggregate.getProduct(price.productId);
-        cartAggregate.changeCurrency;
+        const p = cartAggregate.getProduct(price.productId);
+        if (p) {
+          convertedProducts.push(
+            new CartProduct(p.productId, p.quantity, price.price),
+          );
+        }
       });
-
+      cartAggregate.changeCurrency(newCurrency, convertedProducts);
       cartAggregate.commit();
     } catch (e) {
       if (e instanceof PriceForProductUnknownError) {

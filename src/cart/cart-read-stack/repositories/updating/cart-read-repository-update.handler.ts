@@ -15,7 +15,11 @@ import {
 } from '../interfaces';
 import { Cart } from 'cart/cart-domain/cart';
 import { CartCreatedEvent } from 'cart/cart-domain/events/cart-created-event';
-import { CartReadDto, ProductReadDto } from 'cart/cart-read-stack/dto';
+import {
+  CartReadDto,
+  ProductReadDto,
+  CartProductsReadDto,
+} from 'cart/cart-read-stack/dto';
 import { ProductAddedEvent } from '../../../cart-domain/events/product-added-event';
 import { CartReadModelUpdatedEvent } from 'cart/cart-read-stack/events/cart-read-model-updated.event';
 import { ProductQuantityUpdatedEvent } from '../../../cart-domain/events/product-quantity-updated-event';
@@ -29,6 +33,7 @@ import { ProductDataQuery } from '../../../../pricing/products/product-data.quer
 import { ProductDataDto } from 'pricing/products/dto/product-data.dto';
 import { Maybe } from 'common/ts-helpers';
 import { CartCheckedOutEvent } from '../../../cart-domain/events/cart-checked-out-event';
+import { CartCurrencyChangedEvent } from '../../../cart-domain/events/cart-currency-changed-event';
 
 @EventsHandler(...domainEvents)
 export class CartReadRepositoryUpdateHandler
@@ -183,11 +188,40 @@ export class CartReadRepositoryUpdateHandler
         }
       }
 
-      if (event instanceof CartCurrencyConversionRateChangedEvent) {
-        // todo:
-        // 1. execute Query for prices in this cart
-        // 2. receive calculated cart
-        // 3. store new summary and product prices.
+      if (event instanceof CartCurrencyChangedEvent) {
+        const cart = await this.repo.getById(event.cartId);
+        if (cart) {
+          cart.currency = event.newCurrency;
+          this.repo.store(cart);
+        }
+
+        const promises: Promise<
+          ProductReadDto
+        >[] = event.recalculatedCartProducts.map(
+          async (cartProduct): Promise<ProductReadDto> => {
+            const texts = (await this.queryBus.execute(
+              new ProductDataQuery(cartProduct.productId),
+            )) as Maybe<ProductDataDto>;
+            if (!texts) {
+              this.logger.error(
+                `Cannot find ProductDataDto for product ${cartProduct.productId}`,
+              );
+            }
+            return new ProductReadDto(
+              cartProduct.productId,
+              texts?.name || 'Unknown product name',
+              cartProduct.price.toObject(),
+              cartProduct.quantity,
+              texts?.description,
+            );
+          },
+        );
+
+        const productReadDtos = await Promise.all(promises);
+
+        await this.productsRepo.store(
+          new CartProductsReadDto(event.cartId, productReadDtos),
+        );
       }
 
       this.eventBus.publish(new CartReadModelUpdatedEvent(cartId));
