@@ -1,20 +1,18 @@
 import { AggregateRoot } from '@nestjs/cqrs';
+import { DomainError } from 'common/ddd/errors';
+import { Currency } from 'pricing/money';
 import { DomainEntity } from '../../common/ddd/interfaces';
 import {
-  ProductNotFoundInCart,
-  ForbiddenDomainActionError,
   CannotCheckoutEmptyCart,
+  ForbiddenDomainActionError,
+  ProductNotFoundInCart,
 } from './errors';
+import { CartCheckedOutEvent } from './events/cart-checked-out-event';
+import { CartCreatedEvent } from './events/cart-created-event';
 import { CartCurrencyChangedEvent } from './events/cart-currency-changed-event';
-import { CartCurrencyConversionRateChangedEvent } from './events/cart-currency-conversion-rate-changed-event';
 import { ProductAddedEvent } from './events/product-added-event';
 import { ProductRemovedEvent } from './events/product-removed-event';
-import { CartCurrency } from './valueobjects/cart-currency';
 import { CartProduct } from './valueobjects/cart-product';
-import { CartCreatedEvent } from './events/cart-created-event';
-import { DomainError } from 'common/ddd/errors';
-import { CartCheckedOutEvent } from './events/cart-checked-out-event';
-import { Currency } from 'pricing/money';
 
 export class Cart extends AggregateRoot implements DomainEntity {
   private _id!: string;
@@ -67,27 +65,6 @@ export class Cart extends AggregateRoot implements DomainEntity {
       this.products.set(event.productId, event.getCartProduct());
     }
   }
-
-  // updateCartCurrencyConversionRate(newCurrency: CartCurrency) {
-  //   if (this.isCheckedOut) {
-  //     throw new ForbiddenDomainActionError();
-  //   }
-  //   if (newCurrency.currency !== this.currency) {
-  //     throw new Error(
-  //       'Method should be used to update conversion rate. To change currency use Cart.changeCurrency method.',
-  //     );
-  //   }
-
-  //   this.apply(
-  //     new CartCurrencyConversionRateChangedEvent(this.id, newCurrency),
-  //   );
-  // }
-
-  // onCartCurrencyConversionRateChangedEvent(
-  //   event: CartCurrencyConversionRateChangedEvent,
-  // ) {
-  //   this.currency = event.
-  // }
 
   changeCurrency(
     newCurrency: Currency,

@@ -1,5 +1,4 @@
 import { Money } from 'pricing/money';
-import { DomainError } from 'common/ddd/errors';
 import { InvalidQuantityError } from '../errors';
 
 export class CartProduct {

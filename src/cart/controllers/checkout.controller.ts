@@ -2,13 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Logger,
   Post,
   UseInterceptors,
-  Get,
-  Logger,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Cart } from 'cart/cart-domain/cart';
 import { CartCheckoutCommand } from 'cart/cart-domain/commands/cart-checkout.command';
 import { CartNotFound } from 'cart/cart-domain/errors';

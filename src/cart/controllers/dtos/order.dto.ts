@@ -16,6 +16,9 @@ export class OrderDto {
   @ApiProperty()
   totals!: OrderSummary;
 
+  @ApiProperty({ type: [OrderProduct] })
+  products!: OrderProduct[];
+
   constructor(
     id: string,
     currency: Currency,
@@ -25,5 +28,6 @@ export class OrderDto {
     this.id = id;
     this.currency = currency;
     this.totals = totals;
+    this.products = products;
   }
 }

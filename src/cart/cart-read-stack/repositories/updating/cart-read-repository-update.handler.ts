@@ -1,39 +1,32 @@
-import {
-  IEventHandler,
-  EventsHandler,
-  EventBus,
-  ofType,
-  QueryBus,
-} from '@nestjs/cqrs';
-import { ESEvent } from 'common/event-sourcing';
-import { domainEvents } from 'cart/cart-domain/events';
 import { Inject, Logger, OnModuleDestroy } from '@nestjs/common';
-import { CartReadStackTypes } from 'cart/cart-read-stack/cart-read-stack.types';
-import {
-  ICartReadRepository,
-  ICartProductsReadRepository,
-} from '../interfaces';
+import { EventBus, EventsHandler, IEventHandler, QueryBus } from '@nestjs/cqrs';
 import { Cart } from 'cart/cart-domain/cart';
+import { domainEvents } from 'cart/cart-domain/events';
 import { CartCreatedEvent } from 'cart/cart-domain/events/cart-created-event';
-import {
-  CartReadDto,
-  ProductReadDto,
-  CartProductsReadDto,
-} from 'cart/cart-read-stack/dto';
-import { ProductAddedEvent } from '../../../cart-domain/events/product-added-event';
-import { CartReadModelUpdatedEvent } from 'cart/cart-read-stack/events/cart-read-model-updated.event';
-import { ProductQuantityUpdatedEvent } from '../../../cart-domain/events/product-quantity-updated-event';
-import { DataCorruptedError } from '../../../cart-write-stack/cart-repository/errors';
 import { ProductPriceUpdatedEvent } from 'cart/cart-domain/events/product-price-updated-event';
 import { ProductRemovedEvent } from 'cart/cart-domain/events/product-removed-event';
-import { CartCurrencyConversionRateChangedEvent } from 'cart/cart-domain/events/cart-currency-conversion-rate-changed-event';
-import { Subject, Subscription } from 'rxjs';
+import { CartReadStackTypes } from 'cart/cart-read-stack/cart-read-stack.types';
+import {
+  CartProductsReadDto,
+  CartReadDto,
+  ProductReadDto,
+} from 'cart/cart-read-stack/dto';
+import { CartReadModelUpdatedEvent } from 'cart/cart-read-stack/events/cart-read-model-updated.event';
+import { ESEvent } from 'common/event-sourcing';
 import { sequentialQueueOfAsync } from 'common/rxjs/custom-operators';
-import { ProductDataQuery } from '../../../../pricing/products/product-data.query';
-import { ProductDataDto } from 'pricing/products/dto/product-data.dto';
 import { Maybe } from 'common/ts-helpers';
+import { ProductDataDto } from 'pricing/products/dto/product-data.dto';
+import { Subject, Subscription } from 'rxjs';
+import { ProductDataQuery } from '../../../../pricing/products/product-data.query';
 import { CartCheckedOutEvent } from '../../../cart-domain/events/cart-checked-out-event';
 import { CartCurrencyChangedEvent } from '../../../cart-domain/events/cart-currency-changed-event';
+import { ProductAddedEvent } from '../../../cart-domain/events/product-added-event';
+import { ProductQuantityUpdatedEvent } from '../../../cart-domain/events/product-quantity-updated-event';
+import { DataCorruptedError } from '../../../cart-write-stack/cart-repository/errors';
+import {
+  ICartProductsReadRepository,
+  ICartReadRepository,
+} from '../interfaces';
 
 @EventsHandler(...domainEvents)
 export class CartReadRepositoryUpdateHandler

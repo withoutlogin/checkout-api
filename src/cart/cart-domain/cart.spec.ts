@@ -1,16 +1,14 @@
-import { Cart } from './cart';
-import { CartCurrency } from './valueobjects/cart-currency';
 import Dinero from 'dinero.js';
-import { v4 as uuidv4 } from 'uuid';
 import { Currency } from 'pricing/money';
-import { ProductAddedEvent } from './events/product-added-event';
-import { CartProduct } from './valueobjects/cart-product';
-import { DomainError } from '../../common/ddd/errors';
+import { v4 as uuidv4 } from 'uuid';
+import { Cart } from './cart';
 import {
-  ProductNotFoundInCart,
   ForbiddenDomainActionError,
   InvalidQuantityError,
+  ProductNotFoundInCart,
 } from './errors';
+import { ProductAddedEvent } from './events/product-added-event';
+import { CartProduct } from './valueobjects/cart-product';
 
 const createEmptyCart = (currency: Currency = 'USD'): Cart => {
   const c = new Cart();
