@@ -16,12 +16,7 @@ export class OrderController {
     )) as Maybe<Order>;
 
     if (order) {
-      return new OrderDto(
-        order.orderId,
-        order.currency,
-        order.getTotals(),
-        order.products,
-      );
+      return new OrderDto(order.orderId, order.currency, order.products);
     }
 
     throw new NotFoundException();

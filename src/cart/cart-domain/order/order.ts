@@ -7,8 +7,4 @@ export class Order {
     public readonly currency: Currency,
     public readonly products: OrderProduct[],
   ) {}
-
-  getTotals(): any {
-    return { totals: 1 };
-  }
 }
