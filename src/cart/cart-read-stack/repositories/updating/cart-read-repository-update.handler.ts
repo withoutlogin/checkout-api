@@ -28,6 +28,7 @@ import { sequentialQueueOfAsync } from 'common/rxjs/custom-operators';
 import { ProductDataQuery } from '../../../../pricing/products/product-data.query';
 import { ProductDataDto } from 'pricing/products/dto/product-data.dto';
 import { Maybe } from 'common/ts-helpers';
+import { CartCheckedOutEvent } from '../../../cart-domain/events/cart-checked-out-event';
 
 @EventsHandler(...domainEvents)
 export class CartReadRepositoryUpdateHandler
@@ -173,6 +174,17 @@ export class CartReadRepositoryUpdateHandler
             ),
           ),
         );
+      }
+
+      if (event instanceof CartCheckedOutEvent) {
+        const cart = await this.repo.getById(event.cartId);
+        if (cart) {
+          await this.repo.delete(cart);
+        }
+        const products = await this.productsRepo.getForCartId(event.cartId);
+        if (products) {
+          await this.productsRepo.delete(products);
+        }
       }
 
       if (event instanceof CartCurrencyConversionRateChangedEvent) {

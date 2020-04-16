@@ -12,6 +12,13 @@ export class ResourceCreatedInCollection {
   }
 }
 
-export class CreatedLocationDto {
-  constructor(public readonly location: string) {}
+export class ResourceCreatedWithLocation {
+  @ApiProperty({
+    type: String,
+    example: '/cart/eb261ef2-da87-41c3-8005-dad1cf2d7438',
+  })
+  location: string;
+  constructor(location: string) {
+    this.location = location;
+  }
 }

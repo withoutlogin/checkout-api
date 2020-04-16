@@ -1,6 +1,10 @@
 import { AggregateRoot } from '@nestjs/cqrs';
 import { DomainEntity } from '../../common/ddd/interfaces';
-import { ProductNotFoundInCart } from './errors';
+import {
+  ProductNotFoundInCart,
+  ForbiddenDomainActionError,
+  CannotCheckoutEmptyCart,
+} from './errors';
 import { CartCurrencyChangedEvent } from './events/cart-currency-changed-event';
 import { CartCurrencyConversionRateChangedEvent } from './events/cart-currency-conversion-rate-changed-event';
 import { ProductAddedEvent } from './events/product-added-event';
@@ -10,11 +14,13 @@ import { CartProduct } from './valueobjects/cart-product';
 import { CartCreatedEvent } from './events/cart-created-event';
 import { DomainError } from 'common/ddd/errors';
 import Dinero from 'dinero.js';
+import { CartCheckedOutEvent } from './events/cart-checked-out-event';
 
 export class Cart extends AggregateRoot implements DomainEntity {
   private _id?: string;
   private currency?: CartCurrency;
   private products = new Map<string, CartProduct>();
+  private isCheckedOut = false;
 
   public get id(): string {
     if (!this._id) {
@@ -48,6 +54,10 @@ export class Cart extends AggregateRoot implements DomainEntity {
   }
 
   addProduct(product: CartProduct): void {
+    if (this.isCheckedOut) {
+      throw new ForbiddenDomainActionError();
+    }
+
     this.apply(
       new ProductAddedEvent(
         this.id,
@@ -68,6 +78,9 @@ export class Cart extends AggregateRoot implements DomainEntity {
   }
 
   updateCartCurrencyConversionRate(newCurrency: CartCurrency) {
+    if (this.isCheckedOut) {
+      throw new ForbiddenDomainActionError();
+    }
     if (newCurrency.currency !== this.currency?.currency) {
       throw new Error(
         'Method should be used to update conversion rate. To change currency use Cart.changeCurrency method.',
@@ -87,6 +100,9 @@ export class Cart extends AggregateRoot implements DomainEntity {
   }
 
   changeCurrency(newCurrency: CartCurrency): void {
+    if (this.isCheckedOut) {
+      throw new ForbiddenDomainActionError();
+    }
     if (newCurrency.currency === this.currency?.currency) {
       return;
     }
@@ -100,6 +116,9 @@ export class Cart extends AggregateRoot implements DomainEntity {
   }
 
   removeProduct(productId: string) {
+    if (this.isCheckedOut) {
+      throw new ForbiddenDomainActionError();
+    }
     const current = this.getProduct(productId);
     if (current) {
       this.apply(new ProductRemovedEvent(this.id, productId, current.quantity));
@@ -124,6 +143,9 @@ export class Cart extends AggregateRoot implements DomainEntity {
    * @param newQuantity
    */
   changeProductQuantity(productId: string, newQuantity: number): void {
+    if (this.isCheckedOut) {
+      throw new ForbiddenDomainActionError();
+    }
     const product = this.getProduct(productId);
     if (!product) {
       throw new ProductNotFoundInCart(productId);
@@ -148,10 +170,35 @@ export class Cart extends AggregateRoot implements DomainEntity {
     return this.products.get(productId);
   }
 
+  markAsCheckedOut(): void {
+    if (this.isCheckedOut) {
+      return;
+    }
+    if (this.isEmpty()) {
+      throw new CannotCheckoutEmptyCart();
+    }
+    this.apply(new CartCheckedOutEvent(this.id));
+  }
+
+  onCartCheckedOutEvent(_event: CartCheckedOutEvent): void {
+    this.isCheckedOut = true;
+  }
+
+  isEmpty(): boolean {
+    return this.products.size === 0;
+  }
+
+  onCartDeletedEvent(): void {
+    this.isCheckedOut = true;
+  }
+
   getCurrency(): CartCurrency {
     if (!this.currency) {
       throw new DomainError('Cart is not initialized and committed.');
     }
     return this.currency;
+  }
+  canBeCheckedOut(): boolean {
+    return !this.isEmpty();
   }
 }

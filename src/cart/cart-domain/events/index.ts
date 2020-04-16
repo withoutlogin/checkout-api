@@ -5,6 +5,7 @@ import { ProductPriceUpdatedEvent } from './product-price-updated-event';
 import { ProductQuantityUpdatedEvent } from './product-quantity-updated-event';
 import { ProductRemovedEvent } from './product-removed-event';
 import { CartCreatedEvent } from './cart-created-event';
+import { CartCheckedOutEvent } from './cart-checked-out-event';
 
 export const domainEvents = [
   CartCreatedEvent,
@@ -14,4 +15,5 @@ export const domainEvents = [
   ProductPriceUpdatedEvent,
   ProductQuantityUpdatedEvent,
   ProductRemovedEvent,
+  CartCheckedOutEvent,
 ];

@@ -1,7 +1,6 @@
 import { Money } from 'pricing/money';
 import { DomainError } from 'common/ddd/errors';
 
-// implements ValueObject<CartProduct>
 export class CartProduct {
   constructor(
     public readonly productId: string,

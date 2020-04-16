@@ -6,6 +6,8 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CartWriteStackModule } from './cart-write-stack/cart-write-stack.module';
 import { CartProductController } from './controllers/cart-product.controller';
 import { CartDomainModule } from './cart-domain/cart-domain.module';
+import { OrderController } from './controllers/order.controller';
+import { CheckoutController } from './controllers/checkout.controller';
 
 @Module({
   imports: [
@@ -14,7 +16,12 @@ import { CartDomainModule } from './cart-domain/cart-domain.module';
     CartWriteStackModule,
     CartReadStackModule,
   ],
-  controllers: [CartController, CartProductController],
+  controllers: [
+    CartController,
+    CartProductController,
+    CheckoutController,
+    OrderController,
+  ],
   providers: [],
 })
 export class CartModule {}
