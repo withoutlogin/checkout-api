@@ -8,7 +8,6 @@ export class OrderSaveCommandHandler
   constructor(private orderRepository: InMemoryOrderRepository) {}
 
   async execute(command: OrderSaveCommand): Promise<void> {
-    console.log('order save handler');
     await this.orderRepository.store(command.order);
   }
 }

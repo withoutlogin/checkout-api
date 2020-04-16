@@ -18,4 +18,7 @@ export class InMemoryCartProductsRepository
   async store(cartProducts: CartProductsReadDto): Promise<void> {
     this.storage.set(cartProducts.cartId, cartProducts);
   }
+  async delete(products: CartProductsReadDto): Promise<void> {
+    this.storage.delete(products.cartId);
+  }
 }

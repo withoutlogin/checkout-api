@@ -4,6 +4,8 @@ import {
   Controller,
   Post,
   UseInterceptors,
+  Get,
+  Logger,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiResponse } from '@nestjs/swagger';
@@ -24,6 +26,7 @@ import { CheckoutInputDto } from './dtos/checkout-input.dto';
   description: 'If invalid request body or Cart with given id does not exist.',
 })
 export class CheckoutController {
+  private logger = new Logger(CheckoutController.name);
   constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
 
   @Post()
@@ -32,6 +35,10 @@ export class CheckoutController {
     description: 'Returned when unknown cartId given.',
   })
   @ApiResponse({ status: 201, type: ResourceCreatedWithLocation })
+  @ApiResponse({
+    status: 404,
+    description: 'Cart with given id does not exist',
+  })
   async processCheckout(
     @Body() checkoutInput: CheckoutInputDto,
   ): Promise<ResourceCreatedWithLocation> {
@@ -51,7 +58,10 @@ export class CheckoutController {
       );
     } catch (e) {
       if (e instanceof CartNotFound) {
-        throw new BadRequestException();
+        this.logger.error(
+          'Cart domain model was fetched with queryBus, but cannot be fetched in CartCheckoutCommandHandler!',
+        );
+        throw e;
       }
     }
 

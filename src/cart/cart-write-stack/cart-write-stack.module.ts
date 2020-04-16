@@ -5,7 +5,7 @@ import { CartEventStoreBasedRepository } from './cart-repository/cart-repository
 import { SimpleEventSourcingStore } from './cart-repository/infrastructure/simple-event-sourcing-store';
 import { CartWriteStackTypes } from './cart-write-stack.types';
 import { eventHandlers } from './event-handlers';
-import { CartEventStoreUpdateHandler } from './event-handlers/cart-event-store-update-handler';
+import { CartEventStoreUpdateHandler } from './event-handlers/cart-event-store-update.handler';
 import { queryHandlers } from './query-handlers';
 
 @Module({

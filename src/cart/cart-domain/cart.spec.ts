@@ -6,7 +6,7 @@ import { Currency } from 'pricing/money';
 import { ProductAddedEvent } from './events/product-added-event';
 import { CartProduct } from './valueobjects/cart-product';
 import { DomainError } from '../../common/ddd/errors';
-import { ProductNotFoundInCart } from './errors';
+import { ProductNotFoundInCart, ForbiddenDomainActionError } from './errors';
 
 const createEmptyCart = (currency: Currency = 'USD'): Cart => {
   const c = new Cart();
@@ -21,10 +21,34 @@ const createEmptyCart = (currency: Currency = 'USD'): Cart => {
   return c;
 };
 
+function createCartWithOneProductAdded() {
+  const cart: Cart = createEmptyCart();
+  const productToAdd = new CartProduct(
+    uuidv4(),
+    3,
+    Dinero({
+      amount: 200,
+      precision: 2,
+      currency: 'USD',
+    }),
+  );
+
+  // when
+  cart.addProduct(productToAdd);
+  cart.commit();
+  return {
+    cart: cart,
+    productAdded: productToAdd,
+  };
+}
+
 describe('Cart.addProduct', () => {
+  let cart: Cart;
+  beforeEach(() => {
+    cart = createEmptyCart();
+  });
   it('should add product', () => {
     // given
-    const cart: Cart = createEmptyCart();
     const productToAdd = new CartProduct(
       uuidv4(),
       3,
@@ -41,6 +65,26 @@ describe('Cart.addProduct', () => {
 
     // then
     expect(cart.getProduct(productToAdd.productId)?.quantity).toBe(3);
+  });
+
+  it('should throw ForbiddenDomainActionError when cart has been checked out', () => {
+    const { cart } = createCartWithOneProductAdded();
+    cart.markAsCheckedOut();
+    cart.commit();
+
+    expect(() =>
+      cart.addProduct(
+        new CartProduct(
+          uuidv4(),
+          3,
+          Dinero({
+            amount: 200,
+            precision: 2,
+            currency: 'USD',
+          }),
+        ),
+      ),
+    ).toThrow(ForbiddenDomainActionError);
   });
 });
 
@@ -96,6 +140,16 @@ describe('Cart.removeProduct', () => {
 
     // then
     expect(cart.getUncommittedEvents()).toHaveLength(0);
+  });
+
+  it('should throw ForbiddenDomainActionError when cart has been checked out', () => {
+    const { cart, productAdded } = createCartWithOneProductAdded();
+    cart.markAsCheckedOut();
+    cart.commit();
+
+    expect(() => cart.removeProduct(productAdded.productId)).toThrow(
+      ForbiddenDomainActionError,
+    );
   });
 });
 
@@ -216,6 +270,16 @@ describe('Cart.changeProductQuantity', () => {
       cart.changeProductQuantity(nonExistingProductId, 4),
     ).toThrowError(ProductNotFoundInCart);
   });
+
+  it('should throw ForbiddenDomainActionError when cart has been checked out', () => {
+    const { cart, productAdded } = createCartWithOneProductAdded();
+    cart.markAsCheckedOut();
+    cart.commit();
+
+    expect(() =>
+      cart.changeProductQuantity(productAdded.productId, 66),
+    ).toThrow(ForbiddenDomainActionError);
+  });
 });
 
 describe('Cart.changeCurrency', () => {
@@ -268,5 +332,25 @@ describe('Cart.changeCurrency', () => {
 
     // then
     expect(cart.getProduct(cartProductId)?.price.getCurrency()).toEqual('USD');
+  });
+
+  it('should throw ForbiddenDomainActionError when cart has been checked out', () => {
+    const { cart } = createCartWithOneProductAdded();
+    cart.markAsCheckedOut();
+    cart.commit();
+
+    const newCurrency = new CartCurrency(
+      'EUR',
+      Dinero({
+        amount: 92,
+        precision: 2,
+        currency: 'USD',
+      }),
+    );
+
+    // when
+    expect(() => cart.changeCurrency(newCurrency)).toThrow(
+      ForbiddenDomainActionError,
+    );
   });
 });

@@ -23,6 +23,7 @@ export class CartCheckoutCommandHandler
     private publisher: EventPublisher,
     private commandBus: CommandBus,
   ) {}
+
   async execute(command: CartCheckoutCommand): Promise<void> {
     const cart = (await this.queryBus.execute(
       new GetCartDomainModelQuery(command.cartId),
@@ -34,6 +35,7 @@ export class CartCheckoutCommandHandler
     const aggregate = this.publisher.mergeObjectContext(cart);
 
     if (aggregate.canBeCheckedOut()) {
+      aggregate.markAsCheckedOut();
       const builder = new OrderBuilder();
       const cartReadDto = (await this.queryBus.execute(
         new CartProductsQuery(command.cartId),
@@ -50,9 +52,9 @@ export class CartCheckoutCommandHandler
         .withCurrency(cart.getCurrency().currency)
         .withProducts(cartReadDto)
         .build();
-      console.log('order created', order);
       if (order) {
         await this.commandBus.execute(new OrderSaveCommand(order));
+        aggregate.commit();
       } else {
         throw new Error('Order cannot be created! Should never happen.');
       }

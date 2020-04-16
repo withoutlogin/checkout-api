@@ -1,6 +1,10 @@
 import { DomainError } from 'common/ddd/errors';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 
 export class ProductNotFoundInCart extends DomainError {}
 
 export class CartNotFound extends NotFoundException {}
+
+export class ForbiddenDomainActionError extends ForbiddenException {}
+
+export class CannotCheckoutEmptyCart extends DomainError {}

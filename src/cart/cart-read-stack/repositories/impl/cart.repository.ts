@@ -10,4 +10,7 @@ export class InMemoryCartRepository implements ICartReadRepository {
   async store(data: CartReadDto): Promise<void> {
     this.storage.set(data.cartId, data);
   }
+  async delete(cart: CartReadDto): Promise<void> {
+    this.storage.delete(cart.cartId);
+  }
 }
